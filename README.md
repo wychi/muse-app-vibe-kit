@@ -37,14 +37,15 @@ for when you want it ready-made.
 
 ## Modules
 
-| Module | npm | Status |
-|---|---|---|
-| [full-page-screenshot](modules/full-page-screenshot/) | `@muse-app-vibe-kit/screenshot` | ✅ ready — first public module |
-| [annotate-image](modules/annotate-image/) | `@muse-app-vibe-kit/annotate-image` | ✅ ready — freehand image markup, framework-free |
-| annotate-video | — | 📋 planned — video annotation UX, design TBD |
-| annotate-pdf | — | 📋 planned — PDF review markup |
-| change-request-reporter | — | staging (internal use) |
-| dev-panel | — | design draft |
+| Module | npm | Live demo | Status |
+|---|---|---|---|
+| [full-page-screenshot](modules/full-page-screenshot/) | `@muse-app-vibe-kit/full-page-screenshot` | [demo](https://wychi.github.io/muse-app-vibe-kit/screenshot/) | ✅ ready |
+| [select-region](modules/select-region/) | `@muse-app-vibe-kit/select-region` | [demo](https://wychi.github.io/muse-app-vibe-kit/select-region/) | ✅ ready |
+| [annotate-image](modules/annotate-image/) | `@muse-app-vibe-kit/annotate-image` | [demo](https://wychi.github.io/muse-app-vibe-kit/annotate/) | ✅ ready |
+| annotate-video | — | — | 📋 planned — video annotation UX, design TBD |
+| annotate-pdf | — | — | 📋 planned — PDF review markup |
+| change-request-reporter | — | — | staging (internal use) |
+| dev-panel | — | — | design draft |
 
 ## Layout per module
 
