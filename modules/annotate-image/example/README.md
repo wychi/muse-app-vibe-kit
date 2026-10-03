@@ -1,5 +1,7 @@
 # Minimal drop-in example
 
+**Live demo:** https://wychi.github.io/muse-app-vibe-kit/annotate/ — try it in your browser, no install needed.
+
 ```bash
 npm install @muse-app-vibe-kit/annotate-image
 ```

@@ -1,13 +1,17 @@
-# Deploy the `site/` directory to GitHub Pages.
+# Assembles the Pages site from the modules and deploys it.
+# Each module's demo is built from its own directory at deploy time:
+#   modules/<name>/demo/* + reference/ bundle -> _site/<demo.path>/
+# _site/index.html (the collection landing page) is generated too.
+# Nothing is checked in under site/ anymore — modules are the source of truth.
 # In repo Settings → Pages, set Source to "GitHub Actions".
-name: Deploy site to GitHub Pages
+name: Build and deploy site to GitHub Pages
 
 on:
   push:
     branches: [main]
     paths:
-      - "site/**"
-      - ".github/workflows/pages.yml"
+      - "modules/**"
+      - ".github/workflows/**"
   workflow_dispatch:
 
 permissions:
@@ -28,12 +32,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Build site from modules
+        run: node .github/workflows/build-site.mjs
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: _site
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5

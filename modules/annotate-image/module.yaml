@@ -9,4 +9,9 @@ depends_on: []
 recipe: RECIPE.md
 reference: reference/
 example: example/
+demo:
+  path: annotate
+  bundle:
+    file: annotate-image.js
+    global: AnnotateImage
 license: MIT

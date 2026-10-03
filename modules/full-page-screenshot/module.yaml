@@ -9,4 +9,9 @@ depends_on: [html2canvas]
 recipe: RECIPE.md
 reference: reference/
 example: example/
+demo:
+  path: screenshot
+  bundle:
+    file: screenshot.js
+    global: VibeKitScreenshot
 license: MIT
