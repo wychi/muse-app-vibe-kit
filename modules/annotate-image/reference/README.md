@@ -1,4 +1,4 @@
-# @muse-app-vibe-kit/annotate
+# @muse-app-vibe-kit/annotate-image
 
 Freehand annotation overlay for images — framework-free, hardened for mobile touch.
 Hand it an image, the user draws, you get back an annotated PNG.
@@ -10,13 +10,13 @@ drop in the reference implementation *or* rebuild it yourself.
 ## Install
 
 ```bash
-npm install @muse-app-vibe-kit/annotate
+npm install @muse-app-vibe-kit/annotate-image
 ```
 
 Import `styles.css` once (self-contained, `vk-annotate` prefix, no theming contract):
 
 ```ts
-import "@muse-app-vibe-kit/annotate/styles.css";
+import "@muse-app-vibe-kit/annotate-image/styles.css";
 ```
 
 > Publishing requires the `@muse-app-vibe-kit` npm org (one-time setup).
@@ -25,8 +25,8 @@ import "@muse-app-vibe-kit/annotate/styles.css";
 ## Quickstart
 
 ```ts
-import { openAnnotator } from "@muse-app-vibe-kit/annotate";
-import "@muse-app-vibe-kit/annotate/styles.css";
+import { openAnnotator } from "@muse-app-vibe-kit/annotate-image";
+import "@muse-app-vibe-kit/annotate-image/styles.css";
 
 document.getElementById("markup").addEventListener("click", async () => {
   const { dataBase64, strokes, skipped } = await new Promise((resolve) => {
@@ -48,7 +48,7 @@ React wrapper (ten lines):
 
 ```tsx
 import { useEffect, useRef } from "react";
-import { openAnnotator, type AnnotateResult } from "@muse-app-vibe-kit/annotate";
+import { openAnnotator, type AnnotateResult } from "@muse-app-vibe-kit/annotate-image";
 
 export function AnnotateButton({ image, onDone }: { image: Blob; onDone: (r: AnnotateResult) => void }) {
   const resolveRef = useRef(onDone);

@@ -1,7 +1,7 @@
-name: annotate
-display_name: Annotate
+name: annotate-image
+display_name: Annotate Image
 spec_version: "1.0.0"
-npm: "@muse-app-vibe-kit/annotate"
+npm: "@muse-app-vibe-kit/annotate-image"
 version: 1.0.0
 maturity: stable
 provides: [image-annotation]
