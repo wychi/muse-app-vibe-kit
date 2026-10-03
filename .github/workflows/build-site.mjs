@@ -68,12 +68,27 @@ for (const name of readdirSync(join(ROOT, "modules"), { withFileTypes: true })) 
   mkdirSync(outDir, { recursive: true });
 
   // 1. Bundle the reference implementation (what npm ships) as an IIFE.
-  const entry = join(dir, "reference", "index.ts");
+  const refDir = join(dir, "reference");
+  const entry = join(refDir, "index.ts");
   const bundleFile = String(meta.demo.bundle?.file ?? `${name.name}.js`);
   const bundleGlobal = String(meta.demo.bundle?.global ?? "VibeKitModule");
-  execFileSync("npx", ["--yes", ESBUILD, entry, "--bundle", "--format=iife",
-    `--global-name=${bundleGlobal}`, "--minify", `--outfile=${join(outDir, bundleFile)}`],
-    { stdio: "inherit" });
+  // React modules: esbuild needs the automatic JSX runtime…
+  const hasTsx = readdirSync(refDir).some((f) => f.endsWith(".tsx"));
+  // …and node_modules resolvable. Install the reference's own dependencies
+  // (react, html2canvas, sibling kit packages) when not already installed.
+  // --no-save/--no-package-lock keep the module directory clean; node_modules/
+  // is gitignored at the repo root.
+  let pkgDeps = {};
+  try { pkgDeps = JSON.parse(readFileSync(join(refDir, "package.json"), "utf8")).dependencies ?? {}; }
+  catch { /* optional */ }
+  if (Object.keys(pkgDeps).length > 0 && !existsSync(join(refDir, "node_modules"))) {
+    execFileSync("npm", ["install", "--no-save", "--no-package-lock", "--no-audit", "--no-fund", "--prefix", refDir],
+      { stdio: "inherit" });
+  }
+  const esbuildArgs = [entry, "--bundle", "--format=iife",
+    `--global-name=${bundleGlobal}`, "--minify", `--outfile=${join(outDir, bundleFile)}`];
+  if (hasTsx) esbuildArgs.push("--jsx=automatic");
+  execFileSync("npx", ["--yes", ESBUILD, ...esbuildArgs], { stdio: "inherit" });
 
   // 2. Ship the reference stylesheet alongside, if the module has one.
   const css = join(dir, "reference", "styles.css");

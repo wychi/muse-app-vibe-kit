@@ -21,8 +21,10 @@ jobs:
           node-version: 20
 
       - name: Install Playwright
+        # Local install (not -g): run-demo-e2e.mjs imports "playwright" as a
+        # package, which Node ESM cannot resolve from the global npm root.
         run: |
-          npm install -g playwright@latest
+          npm install --no-save --no-package-lock playwright@latest
           npx playwright install chromium --with-deps
 
       - name: Run demo E2E tests

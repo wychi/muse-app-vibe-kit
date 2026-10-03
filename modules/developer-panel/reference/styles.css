@@ -1,0 +1,96 @@
+/* @muse-app-vibe-kit/developer-panel — self-contained panel styles.
+ *
+ * Theme variables are scoped to .dev-panel-anchor with sane defaults, so the
+ * panel works with zero host-app CSS. A host app may override any of them by
+ * defining the same variables on an ancestor element.
+ */
+.dev-panel-anchor {
+  --border: #e5e7eb;
+  --text: #1d1d1f;
+  --surface: #ffffff;
+  --surface-2: #f5f5f7;
+  --dim: #86868b;
+  --accent: #0071e3;
+  --lime: #a3e635;
+}
+
+.dev-panel-dismiss { position: fixed; z-index: 88; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; cursor: default; }
+.dev-panel-anchor { position: fixed; z-index: 140; right: 14px; bottom: calc(18px + env(safe-area-inset-bottom)); width: 46px; height: 46px; pointer-events: none; }
+.dev-panel-trigger { display: grid; width: 46px; height: 46px; place-items: center; border: 1px solid rgba(255,255,255,.24); border-radius: 50%; color: #fff; background: rgba(7,29,34,.76); box-shadow: 0 7px 20px rgba(3,17,20,.28); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); opacity: .82; pointer-events: auto; touch-action: manipulation; transition: opacity 120ms ease, transform 120ms ease; }
+.dev-panel-trigger:hover, .dev-panel-trigger[aria-expanded="true"] { opacity: 1; }
+.dev-panel-trigger:active { transform: scale(.93); }
+.dev-panel-trigger:disabled { opacity: 0; pointer-events: none; }
+.dev-panel-trigger svg { display: block; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.dev-panel-card { position: absolute; right: 0; bottom: 56px; width: min(88vw, 320px); max-height: min(72vh, 580px); overflow: auto; border: 1px solid var(--border); border-radius: 14px; color: var(--text); background: var(--surface); box-shadow: 0 14px 38px rgba(3,17,20,.28); pointer-events: auto; transform-origin: bottom right; animation: dev-panel-in 160ms ease-out both; }
+@keyframes dev-panel-in { from { opacity: 0; transform: scale(.92) translateY(8px); } to { opacity: 1; transform: none; } }
+.dev-panel-card > header { position: sticky; top: 0; z-index: 1; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; padding: 10px 11px; border-bottom: 1px solid var(--border); background: var(--surface); }
+.dev-panel-card > header > span { border-radius: 5px; color: var(--surface); background: var(--text); padding: 3px 5px; font-size: 9px; font-weight: 950; letter-spacing: .08em; }
+.dev-panel-card > header > strong { font-size: 14px; color: var(--text); }
+/* Host element selectors (e.g. `header { color: … }`) beat inheritance.
+   Every text element in the panel carries an explicit color for this reason. */
+.dev-panel-card > header > button { width: 30px; height: 30px; border: 0; border-radius: 8px; color: var(--dim); background: var(--surface-2); font-size: 20px; line-height: 1; cursor: pointer; }
+.dev-panel-section { padding: 11px; border-bottom: 1px solid var(--border); }
+.dev-report-section { display: grid; gap: 10px; padding-bottom: 12px; }
+/* Shared foundation for the panel's action buttons: identical geometry so
+   the two buttons can never drift apart again. Variants only change color. */
+.dev-action-button { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; padding: 0 14px; border: 1px solid transparent; border-radius: 12px; font-size: 15px; font-weight: 800; line-height: 1.2; cursor: pointer; touch-action: manipulation; font-family: inherit; }
+.dev-action-button svg { width: 20px; height: 20px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.dev-action-button:disabled { opacity: .55; cursor: wait; }
+.dev-action-button-primary { background: var(--accent); color: #fff; }
+.dev-action-button-primary:active:not(:disabled) { filter: brightness(.94); }
+.dev-action-button-secondary { background: var(--surface-2); color: var(--text); border-color: var(--border); }
+.dev-action-button-secondary:active:not(:disabled) { filter: brightness(.96); }
+.dev-report-hint { margin: 0; color: var(--dim); font-size: 12px; }
+.dev-report-thumb { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface-2); }
+.dev-report-thumb img { display: block; width: 100%; max-height: 180px; object-fit: contain; }
+.dev-report-categories { display: flex; flex-wrap: wrap; gap: 6px; }
+.dev-report-category { border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--dim); padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.dev-report-category.is-selected { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+.dev-report-category:disabled { opacity: .6; cursor: default; }
+.dev-report-description { width: 100%; min-height: 84px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); padding: 10px 12px; font: inherit; font-size: 14px; resize: vertical; box-sizing: border-box; }
+.dev-report-description:disabled { opacity: .6; }
+.dev-panel-version { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 11px; color: var(--dim); background: var(--surface-2); font-size: 9px; }
+.dev-panel-version code { overflow: hidden; text-overflow: ellipsis; font: 800 9px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
+.report-id-card { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; margin: 0 -11px; border-top: 1px solid var(--border); background: color-mix(in srgb, var(--lime) 14%, var(--surface)); padding: 13px 42px 13px 12px; }
+.report-id-card > span { color: var(--dim); font-size: 10px; font-weight: 850; }
+.report-id-card code { color: var(--text); font: 950 22px/1.15 ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: .03em; user-select: all; }
+.report-id-card p { margin: 2px 0 0; color: var(--dim); font-size: 10px; }
+.report-id-card .report-id-close { position: absolute; top: 5px; right: 5px; width: 28px; height: 28px; border: 0; border-radius: 7px; color: var(--dim); background: transparent; font-size: 18px; line-height: 1; cursor: pointer; }
+.dev-panel-toast { position: fixed; left: 50%; bottom: calc(80px + env(safe-area-inset-bottom)); z-index: 2147483645; transform: translateX(-50%); max-width: min(88vw, 420px); border-radius: 10px; color: #fff; background: rgba(7,29,34,.92); padding: 10px 16px; font-size: 13px; text-align: center; pointer-events: none; animation: dev-panel-in 160ms ease-out both; }
+
+/* --- Vendored from @muse-app-vibe-kit/annotate-image@1.1.0 reference/styles.css.
+ * The annotation overlay (openAnnotator) needs these classes. Re-copy on upgrade. */
+.vk-annotate {
+  position: fixed; z-index: 1000; inset: 0;
+  display: grid; grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden; color: #fff; background: #020b0d;
+  padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom);
+}
+.vk-annotate-toolbar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 9px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.16); background: #071d22; padding: 10px 12px;
+}
+.vk-annotate-toolbar > div:first-child { min-width: 138px; margin-right: auto; }
+.vk-annotate-toolbar strong, .vk-annotate-toolbar span { display: block; }
+.vk-annotate-toolbar strong { font-size: 14px; }
+.vk-annotate-toolbar span { margin-top: 2px; color: #a8bdc0; font-size: 10px; }
+.vk-annotate-colors, .vk-annotate-edits, .vk-annotate-submit { display: flex; align-items: center; gap: 6px; }
+.vk-annotate-colors button {
+  width: 30px; height: 30px; border: 2px solid transparent; border-radius: 50%;
+  background: var(--pen-color); box-shadow: 0 0 0 1px rgba(255,255,255,.28); cursor: pointer;
+}
+.vk-annotate-colors button[aria-pressed="true"] { border-color: #071d22; box-shadow: 0 0 0 3px #fff; }
+.vk-annotate-edits button, .vk-annotate-submit button {
+  min-height: 34px; border: 1px solid rgba(255,255,255,.26); border-radius: 8px;
+  color: #fff; background: #15353b; padding: 0 10px; font-size: 11px; font-weight: 850; cursor: pointer;
+}
+.vk-annotate-edits button:disabled, .vk-annotate-submit button:disabled { opacity: .45; cursor: default; }
+.vk-annotate-submit .vk-annotate-skip { border-color: transparent; color: #c0ced0; background: transparent; }
+.vk-annotate-submit .vk-annotate-done { border-color: #a3e635; color: #071d22; background: #a3e635; }
+.vk-annotate-stage { display: grid; min-height: 0; place-items: center; overflow: auto; padding: 12px; }
+.vk-annotate-stage p { color: #a8bdc0; font-size: 13px; }
+.vk-annotate-stage canvas {
+  display: block; max-width: 100%; max-height: 100%; width: auto; height: auto;
+  background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.44);
+  touch-action: none; cursor: crosshair;
+}

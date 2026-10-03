@@ -1,0 +1,17 @@
+name: developer-panel
+display_name: Developer Panel
+spec_version: "1.2.0"
+npm: "@muse-app-vibe-kit/developer-panel"
+version: 1.0.0
+maturity: staging
+provides: [developer-panel, bug-reporting]
+depends_on: [full-page-screenshot, annotate-image]
+recipe: RECIPE.md
+reference: reference/
+example: example/
+demo:
+  path: dev-panel
+  bundle:
+    file: developer-panel.js
+    global: DeveloperPanel
+license: MIT
