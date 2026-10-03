@@ -10,25 +10,28 @@ An agent-friendly library of production-hardened web modules.
 
 ## Why
 
-With AI, building an app is like cooking: everyone follows recipes, but each dish
-comes out with its own flavor. That's why this kit ships **recipes**, not a
+Every AI agent rebuilding the same utilities burns thousands of tokens rediscovering
+the same quirks — the iOS webview that silently breaks screenshot capture, the touch
+handler that drops strokes, the edge case that only shows up on a real phone.
+
+This kit exists so that discovery cost is paid **once**, not by everyone. Every
+module is extracted from a real production Muse app and battle-tested on real
+devices — then distilled into a **recipe** plus a **reference implementation**,
+so you save tokens, skip the debugging, and ship faster.
+
+A code dump alone doesn't save tokens; documented failure modes and platform quirks
+do. That's the whole idea — many hands make light work: pool everyone's hard-won
+lessons, so nobody pays for them twice.
+
+And with AI, building an app is like cooking: everyone follows recipes, but each
+dish comes out with its own flavor. That's why this kit ships recipes, not a
 framework — the recipe gets you past the hard parts someone already figured out,
 and leaves room for your own taste.
 
 Vibe-coding it yourself is cooking at home; dropping in someone else's library is
 eating out — both are great, it just depends on the situation. So every module
-ships both: the **recipe** for when you want to cook, and a **reference
-implementation** for when you just want to eat.
-
-The hard parts are expensive. Every AI agent rebuilding the same utilities burns
-thousands of tokens rediscovering the same quirks — the iOS webview that silently
-breaks screenshot capture, the touch handler that drops strokes, the edge case
-that only shows up on a real phone.
-
-So the discovery cost should be paid **once**, not by everyone. A code dump alone
-doesn't save tokens; documented failure modes and platform quirks do. That's the
-whole idea — many hands make light work: pool everyone's hard-won lessons, so
-nobody pays for them twice.
+ships both: the recipe for when you want to cook, and a reference implementation
+for when you just want to eat.
 
 ## Modules
 
