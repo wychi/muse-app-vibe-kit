@@ -10,14 +10,20 @@ An agent-friendly library of production-hardened web modules.
 
 ## Why
 
-Every AI agent rebuilding the same utilities burns thousands of tokens rediscovering
-the same quirks — the iOS webview that silently breaks screenshot capture, the touch
-handler that drops strokes, the edge case that only shows up on a real phone.
+With AI, building an app is like cooking: everyone follows recipes, but each dish
+comes out with its own flavor. That's why this kit ships **recipes**, not a
+framework — the recipe gets you past the hard parts someone already figured out,
+and leaves room for your own taste.
 
-This kit exists so the discovery cost is paid **once**, not by everyone. A code dump
-alone doesn't save tokens; documented failure modes and platform quirks do. That's
-the whole idea: 群策群力 — pool everyone's hard-won lessons, so nobody pays for
-them twice.
+The hard parts are expensive. Every AI agent rebuilding the same utilities burns
+thousands of tokens rediscovering the same quirks — the iOS webview that silently
+breaks screenshot capture, the touch handler that drops strokes, the edge case
+that only shows up on a real phone.
+
+So the discovery cost should be paid **once**, not by everyone. A code dump alone
+doesn't save tokens; documented failure modes and platform quirks do. That's the
+whole idea — many hands make light work: pool everyone's hard-won lessons, so
+nobody pays for them twice.
 
 ## Modules
 
