@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>select-region demo</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 0; padding: 24px; max-width: 720px; }
+  .tall { height: 140vh; background: linear-gradient(#f0f4ff, #fff); padding: 16px; border-radius: 12px; }
+  button { padding: 14px 24px; font-size: 16px; border: none; border-radius: 12px;
+           background: #0a84ff; color: #fff; font-weight: 600; cursor: pointer; }
+  #out { margin-top: 16px; padding: 12px; background: #f4f4f5; border-radius: 8px;
+         font-family: monospace; font-size: 13px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+  <h1>select-region demo</h1>
+  <p>Tap the button, drag a rectangle anywhere on this tall page, then confirm.
+     Scroll down first to verify the returned coordinates include the scroll offset.</p>
+  <button id="pick">Select a region</button>
+  <div id="out">No selection yet.</div>
+  <div class="tall"><p>Scroll target — select across this area.</p></div>
+  <script type="module">
+    import { selectRegion } from "./select-region.js";
+    document.getElementById("pick").addEventListener("click", async () => {
+      const region = await selectRegion();
+      document.getElementById("out").textContent =
+        region ? JSON.stringify(region, null, 2) : "Cancelled (null).";
+    });
+  </script>
+</body>
+</html>
