@@ -1,5 +1,19 @@
 export type FullPageScreenshotWarning = (message: string, detail?: unknown) => void;
 
+export type FullPageScreenshotCropMeasurement = {
+  captureRootRect: { left: number; top: number; width: number; height: number };
+  captureRootScrollLeft: number;
+  captureRootScrollTop: number;
+  windowScrollX: number;
+  windowScrollY: number;
+  requestedSourceX: number;
+  requestedSourceY: number;
+  sourceX: number;
+  sourceY: number;
+  sourceWidth: number;
+  sourceHeight: number;
+};
+
 export type FullPageScreenshotMeasurement = {
   scrollContainer: string;
   containerWidth: number;
@@ -11,6 +25,8 @@ export type FullPageScreenshotMeasurement = {
   outputWidth: number | null;
   outputHeight: number | null;
   scale: number;
+  region?: { x: number; y: number; width: number; height: number };
+  crop?: FullPageScreenshotCropMeasurement;
 };
 
 export type FullPageScreenshotOverlayDiagnostic = {
@@ -48,6 +64,13 @@ export type FullPageScreenshotOptions = {
   onOverlayDiagnostic?: (diagnostic: FullPageScreenshotOverlayDiagnostic) => void;
   /** Maximum pixel area for the resulting canvas. Defaults to 12 megapixels. */
   maxPixelArea?: number;
+  /**
+   * Crop the capture to a document-relative rectangle (CSS pixels) before
+   * encoding. The rectangle is intersected with the captured area; an empty
+   * intersection throws. Use this instead of capturing a nested scrollable
+   * DIV (which is not supported) — capture the page root and crop.
+   */
+  region?: { x: number; y: number; width: number; height: number };
 };
 
 type FullPageScreenshotResult = {
@@ -103,6 +126,73 @@ export function supportsImageClipboard(): boolean {
 
 function nextPaint(): Promise<void> {
   return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+}
+
+function waitForFontsReady(timeoutMs: number): Promise<void> {
+  const fonts = (document as Document & { fonts?: { ready: Promise<unknown> } }).fonts;
+  if (!fonts?.ready) return Promise.resolve();
+  return Promise.race([
+    fonts.ready.then(() => undefined),
+    new Promise<void>((resolve) => setTimeout(resolve, timeoutMs)),
+  ]);
+}
+
+function cropCanvasToRegion(
+  source: HTMLCanvasElement,
+  region: { x: number; y: number; width: number; height: number },
+  captureWidth: number,
+  captureHeight: number,
+  captureRoot: HTMLElement,
+): { canvas: HTMLCanvasElement; measurement: FullPageScreenshotCropMeasurement } {
+  // selectRegion returns document coordinates based on the window viewport:
+  // client + window.scroll. The screenshot canvas, however, starts at the
+  // capture root's *content* origin. Muse's generated root is a fixed overflow
+  // scroller, so window.scrollY remains zero while captureRoot.scrollTop moves.
+  // Add the root's own scroll offset after removing the root's viewport origin.
+  const rootRect = captureRoot.getBoundingClientRect();
+  const windowScrollX = window.scrollX;
+  const windowScrollY = window.scrollY;
+  const rootContentX = region.x - windowScrollX - rootRect.left + captureRoot.scrollLeft;
+  const rootContentY = region.y - windowScrollY - rootRect.top + captureRoot.scrollTop;
+  const scaleX = source.width / captureWidth;
+  const scaleY = source.height / captureHeight;
+  const requestedSourceX = Math.round(rootContentX * scaleX);
+  const requestedSourceY = Math.round(rootContentY * scaleY);
+  const requestedRight = Math.round((rootContentX + region.width) * scaleX);
+  const requestedBottom = Math.round((rootContentY + region.height) * scaleY);
+  // Intersect only after calculating both edges. Clamping the origin first
+  // would incorrectly preserve pixels that lie outside the capture root.
+  const sourceX = Math.max(0, Math.min(source.width, requestedSourceX));
+  const sourceY = Math.max(0, Math.min(source.height, requestedSourceY));
+  const sourceRight = Math.max(0, Math.min(source.width, requestedRight));
+  const sourceBottom = Math.max(0, Math.min(source.height, requestedBottom));
+  const sourceWidth = Math.max(0, sourceRight - sourceX);
+  const sourceHeight = Math.max(0, sourceBottom - sourceY);
+  if (sourceWidth <= 0 || sourceHeight <= 0) {
+    throw new Error("Screenshot region does not intersect the captured area.");
+  }
+  const cropped = document.createElement("canvas");
+  cropped.width = sourceWidth;
+  cropped.height = sourceHeight;
+  const context = cropped.getContext("2d");
+  if (!context) throw new Error("Screenshot region canvas unavailable.");
+  context.drawImage(source, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, sourceWidth, sourceHeight);
+  return {
+    canvas: cropped,
+    measurement: {
+      captureRootRect: { left: rootRect.left, top: rootRect.top, width: rootRect.width, height: rootRect.height },
+      captureRootScrollLeft: captureRoot.scrollLeft,
+      captureRootScrollTop: captureRoot.scrollTop,
+      windowScrollX,
+      windowScrollY,
+      requestedSourceX,
+      requestedSourceY,
+      sourceX,
+      sourceY,
+      sourceWidth,
+      sourceHeight,
+    },
+  };
 }
 
 function blobToDataUrl(blob: Blob): Promise<string> {
@@ -202,6 +292,11 @@ function describeElement(element: HTMLElement): string {
 }
 
 export async function captureFullPageScreenshot(renderer: Html2CanvasRenderer, options: FullPageScreenshotOptions = {}): Promise<FullPageScreenshotResult> {
+  // Wait for webfonts before measuring: text laid out with fallback metrics
+  // can shift once the real font arrives, and foreignObject rendering can
+  // miss text entirely when fonts aren't ready. Bounded so a hung font load
+  // never blocks the capture.
+  await waitForFontsReady(1500);
   // Capture an explicit app-content wrapper when one exists. The Muse SDK's
   // outer root is a fixed viewport scroller; changing that root to the full
   // document height inside html2canvas changes descendant layout and makes CSS
@@ -515,8 +610,18 @@ export async function captureFullPageScreenshot(renderer: Html2CanvasRenderer, o
     measurement.outputWidth = canvas.width;
     measurement.outputHeight = canvas.height;
     options.onMeasurement?.({ ...measurement });
+    let outputCanvas = canvas;
+    if (options.region) {
+      const crop = cropCanvasToRegion(canvas, options.region, width, height, captureRoot);
+      outputCanvas = crop.canvas;
+      measurement.outputWidth = outputCanvas.width;
+      measurement.outputHeight = outputCanvas.height;
+      measurement.region = { ...options.region };
+      measurement.crop = crop.measurement;
+      options.onMeasurement?.({ ...measurement });
+    }
     const blob = await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob((value) => value ? resolve(value) : reject(new Error("PNG unavailable")), "image/png");
+      outputCanvas.toBlob((value) => value ? resolve(value) : reject(new Error("PNG unavailable")), "image/png");
     });
     return { blob, measurement: { ...measurement } };
   } finally {

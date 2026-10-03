@@ -21,8 +21,16 @@ Current modules:
 
 | Module | Verification page |
 |---|---|
-| `annotate-image` | Pick the fixture image → `openAnnotator()` overlay → annotated image plus the programmatic result (`strokes`, per-stroke `bbox` + `points` JSON) |
-| `full-page-screenshot` | A naturally scrolling long page (like a real app page) → `captureFullPageScreenshot()` on the page root → PNG preview, measurements, Download PNG, and Copy to clipboard (`copyFullPageScreenshot`, capability-gated via `supportsImageClipboard()`) |
+| `annotate-image` | Pick a local image or the fixture → `openAnnotator()` overlay → annotated image plus the programmatic result (`strokes`, per-stroke `bbox` + `points` JSON) |
+| `full-page-screenshot` | A realistic scrolling app page → `captureFullPageScreenshot()` on the page root → PNG preview, measurements, Download PNG, and Copy to clipboard (`copyFullPageScreenshot`, capability-gated via `supportsImageClipboard()`) |
+| `select-region` | `selectRegion()` full-screen overlay → drag a rectangle → returned `{ x, y, width, height }` JSON |
+
+Integration tests (module combinations):
+
+| Test | Flow |
+|---|---|
+| Region screenshot | `selectRegion()` → `captureFullPageScreenshot({ region })` → cropped PNG + coordinate trace |
+| AI identify | `captureFullPageScreenshot()` → `identifyScreenshotObjects` (`ctx.inference.complete`) → listed objects |
 
 ## Adding a module
 
