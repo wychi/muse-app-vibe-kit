@@ -78,9 +78,11 @@ for (const name of readdirSync(join(ROOT, "modules"), { withFileTypes: true })) 
 
   // 3. Copy the demo source (HTML + assets). Never contains build output.
   // README.md stays out of the deployed site — it's for developers, not visitors.
+  // screenshots/ is PR illustration only; served from git, not from Pages.
   const demoDir = join(dir, "demo");
   for (const f of readdirSync(demoDir)) {
     if (f.toLowerCase() === "readme.md") continue;
+    if (f === "screenshots") continue;
     cpSync(join(demoDir, f), join(outDir, f), { recursive: true });
   }
 
