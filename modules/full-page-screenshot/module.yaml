@@ -1,0 +1,12 @@
+name: full-page-screenshot
+display_name: Full-Page Screenshot
+spec_version: "1.0.0"
+npm: "@muse-app-vibe-kit/screenshot"
+version: 1.0.0
+maturity: stable
+provides: [full-page-screenshot, screenshot-to-clipboard]
+depends_on: [html2canvas]
+recipe: RECIPE.md
+reference: reference/
+example: example/
+license: MIT
