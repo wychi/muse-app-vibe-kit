@@ -23,10 +23,10 @@ A code dump alone doesn't save tokens; documented failure modes and platform qui
 do. That's the whole idea — many hands make light work: pool everyone's hard-won
 lessons, so nobody pays for them twice.
 
-And with AI, building an app is like cooking: everyone follows recipes, but each
-dish comes out with its own flavor. That's why this kit ships recipes, not a
-framework — the recipe gets you past the hard parts someone already figured out,
-and leaves room for your own taste.
+And with AI, building an app is like cooking: everyone follows recipes, but everyone
+has different tastes, so everyone tweaks the recipe. That's why this kit ships
+recipes, not a framework — the recipe gets you past the hard parts someone already
+figured out, and leaves room for your own flavor.
 
 Vibe-coding it yourself is cooking at home; dropping in someone else's library is
 eating out — both are great, it just depends on the situation. So every module
