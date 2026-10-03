@@ -14,6 +14,9 @@ import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const OUT = join(ROOT, "_site");
 const ESBUILD = "esbuild@0.28.2";
+const BUILD_SHA = (process.env.GITHUB_SHA || execFileSync("git", ["rev-parse", "HEAD"]).toString().trim()).slice(0, 8);
+const BUILD_TIME = new Date().toISOString().slice(0, 16).replace("T", " ");
+const BUILD_STAMP = `<div style="position:fixed;bottom:8px;right:8px;font:11px/1.4 system-ui,sans-serif;color:#999;background:rgba(255,255,255,.85);padding:4px 8px;border-radius:6px;z-index:2147483646;pointer-events:none;">build ${BUILD_SHA} · ${BUILD_TIME} UTC</div>`;
 
 // --- Minimal YAML reader: supports flat `key: value` (quoted strings, [flow,
 // lists]) plus nested maps via 2-space indentation, up to 3 levels. Fails loudly
@@ -84,6 +87,16 @@ for (const name of readdirSync(join(ROOT, "modules"), { withFileTypes: true })) 
     if (f.toLowerCase() === "readme.md") continue;
     if (f === "screenshots") continue;
     cpSync(join(demoDir, f), join(outDir, f), { recursive: true });
+  }
+
+  // 3b. Stamp the demo page with build commit + time (cache-busting debug aid).
+  const demoIndex = join(outDir, "index.html");
+  if (existsSync(demoIndex)) {
+    let html = readFileSync(demoIndex, "utf8");
+    if (html.includes("</body>")) {
+      html = html.replace("</body>", `${BUILD_STAMP}</body>`);
+      writeFileSync(demoIndex, html);
+    }
   }
 
   // 4. Collect metadata for the collection page.
