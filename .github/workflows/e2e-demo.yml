@@ -85,8 +85,17 @@ jobs:
                 issue_number: issue.number, state: 'closed',
               });
             }
-            await github.rest.issues.create({
+            const { data: issue } = await github.rest.issues.create({
               owner: context.repo.owner, repo: context.repo.repo,
               title: `E2E demo tests failed (${new Date().toISOString().slice(0, 10)})`,
               body, labels: ['e2e-failure'],
             });
+            // Best-effort: hand the issue to Copilot coding agent if available
+            try {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: issue.number, assignees: ['copilot'],
+              });
+            } catch (e) {
+              core.warning(`Could not assign to Copilot: ${e.message}`);
+            }
