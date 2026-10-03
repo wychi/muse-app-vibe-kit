@@ -6,7 +6,7 @@
 <button id="shot">Capture full page</button>
 <script type="module">
   import html2canvas from "html2canvas";
-  import { captureFullPageScreenshot } from "@muse-app-vibe-kit/screenshot";
+  import { captureFullPageScreenshot } from "@muse-app-vibe-kit/full-page-screenshot";
 
   document.getElementById("shot").addEventListener("click", async () => {
     const { blob, measurement } = await captureFullPageScreenshot(html2canvas, {
@@ -25,3 +25,8 @@
 ```
 
 See `../RECIPE.md` for *why* each of these choices exists.
+
+## More examples
+
+- [`ai-vision.md`](./ai-vision.md) — feed the screenshot to Muse AI
+  (`ctx.inference.complete`) to identify objects or draft bug descriptions.

@@ -72,6 +72,14 @@ iOS grants clipboard access on the user gesture. `copyFullPageScreenshot` must b
 blob synchronously, then the capture runs async. If you `await` the capture first, the
 gesture grant is gone and the write fails.
 
+### Wait for `document.fonts.ready` before measuring
+
+Text laid out with fallback font metrics can shift when the webfont arrives, and
+foreignObject rendering can miss text entirely if fonts aren't ready at serialize time.
+So capture awaits `document.fonts.ready` first, bounded at 1500ms so a hung font load
+never blocks the screenshot. Learned from `@prongbang/screenshot`'s hard-won constraints
+(they independently confirmed the foreignObject blank-canvas failure).
+
 ## 3. Failure modes (enumerate before coding)
 
 | # | Failure | Detection | Mitigation |
