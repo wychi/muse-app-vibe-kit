@@ -20,10 +20,10 @@
   <button id="pick">Select a region</button>
   <div id="out">No selection yet.</div>
   <div class="tall"><p>Scroll target — select across this area.</p></div>
-  <script type="module">
-    import { selectRegion } from "./select-region.js";
+  <script src="./select-region.js"></script>
+  <script>
     document.getElementById("pick").addEventListener("click", async () => {
-      const region = await selectRegion();
+      const region = await SelectRegion.selectRegion();
       document.getElementById("out").textContent =
         region ? JSON.stringify(region, null, 2) : "Cancelled (null).";
     });
