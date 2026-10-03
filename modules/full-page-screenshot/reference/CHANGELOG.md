@@ -2,7 +2,7 @@
 
 ## 1.2.0 (2026-10-03)
 
-- New `region` option: crop the capture to a document-relative rectangle (CSS pixels) before encoding. Intersected with the captured area; empty intersection throws. This is the supported way to capture part of a page — nested scrollable DIVs remain unsupported.
+- New `region` option: crop the capture to a document-relative rectangle (CSS pixels) before encoding. Intersected with the captured area; empty intersection throws. This is the supported way to capture part of a page — nested scrollable DIVs remain unsupported. The module translates the region into capture-root content coordinates, including the root's own `scrollLeft`/`scrollTop` (fixed 2026-10-03: region was offset when the capture root was scrolled). The crop trace is in `measurement.crop`.
 
 ## 1.1.0 (2026-10-03)
 
