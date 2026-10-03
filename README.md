@@ -28,10 +28,12 @@ has different tastes, so everyone tweaks the recipe. That's why this kit ships
 recipes, not a framework — the recipe gets you past the hard parts someone already
 figured out, and leaves room for your own flavor.
 
-Vibe-coding it yourself is cooking at home; dropping in someone else's library is
-ordering takeout — both are great, it just depends on the situation. So every module
+Think of your app as a banquet: some dishes you cook yourself, others you bring in
+ready-made — so the whole feast comes together faster and more complete.
+Vibe-coding is cooking from scratch; dropping in a library is serving a quality
+prepared dish. Both are great, it just depends on the situation — so every module
 ships both: the recipe for when you want to cook, and a reference implementation
-for when you'd rather order in.
+for when you want it ready-made.
 
 ## Modules
 
