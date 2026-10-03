@@ -1,0 +1,48 @@
+name: Publish modules to npm
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "modules/*/reference/package.json"
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Find changed modules
+        id: changed
+        run: |
+          # Modules whose reference/package.json changed in this push
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
+            | grep -oP '^modules/\K[^/]+(?=/reference/package\.json)' \
+            | sort -u | tr '\n' ' ' > /tmp/modules.txt
+          echo "modules=$(cat /tmp/modules.txt)" >> "$GITHUB_OUTPUT"
+          echo "Changed: $(cat /tmp/modules.txt)"
+
+      - name: Publish each changed module
+        if: steps.changed.outputs.modules != ''
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          for mod in ${{ steps.changed.outputs.modules }}; do
+            dir="modules/$mod/reference"
+            name=$(node -p "require('./$dir/package.json').name")
+            ver=$(node -p "require('./$dir/package.json').version")
+            if npm view "$name@$ver" version >/dev/null 2>&1; then
+              echo "$name@$ver already published, skipping"
+            else
+              echo "Publishing $name@$ver"
+              npm publish --access public "$dir"
+            fi
+          done
