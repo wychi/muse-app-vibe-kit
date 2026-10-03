@@ -1,0 +1,21 @@
+name: Validate module structure
+
+on:
+  pull_request:
+    paths:
+      - "modules/**"
+      - "MODULE_SPEC.md"
+      - ".github/workflows/check-module-structure.mjs"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check module structure
+        run: node .github/workflows/check-module-structure.mjs
