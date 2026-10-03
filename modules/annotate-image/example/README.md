@@ -1,14 +1,14 @@
 # Minimal drop-in example
 
 ```bash
-npm install @muse-app-vibe-kit/image-annotate
+npm install @muse-app-vibe-kit/annotate-image
 ```
 
 ```html
 <button id="markup">Mark up this photo</button>
 <script type="module">
-  import { openAnnotator } from "@muse-app-vibe-kit/image-annotate";
-  import "@muse-app-vibe-kit/image-annotate/styles.css";
+  import { openAnnotator } from "@muse-app-vibe-kit/annotate-image";
+  import "@muse-app-vibe-kit/annotate-image/styles.css";
 
   document.getElementById("markup").addEventListener("click", () => {
     openAnnotator({

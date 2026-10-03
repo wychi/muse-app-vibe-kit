@@ -1,4 +1,4 @@
-# RECIPE: image-annotate
+# RECIPE: annotate-image
 
 > Freehand annotation overlay for images: mount it on any image source, the user draws,
 > you get back an annotated PNG. Framework-free. Feed it video frames and it annotates
