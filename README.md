@@ -15,6 +15,11 @@ comes out with its own flavor. That's why this kit ships **recipes**, not a
 framework — the recipe gets you past the hard parts someone already figured out,
 and leaves room for your own taste.
 
+Vibe-coding it yourself is cooking at home; dropping in someone else's library is
+eating out — both are great, it just depends on the situation. So every module
+ships both: the **recipe** for when you want to cook, and a **reference
+implementation** for when you just want to eat.
+
 The hard parts are expensive. Every AI agent rebuilding the same utilities burns
 thousands of tokens rediscovering the same quirks — the iOS webview that silently
 breaks screenshot capture, the touch handler that drops strokes, the edge case
