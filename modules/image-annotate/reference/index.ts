@@ -1,5 +1,5 @@
 /**
- * @muse-app-vibe-kit/annotate — freehand annotation overlay for images.
+ * @muse-app-vibe-kit/image-annotate — freehand annotation overlay for images.
  *
  * Framework-free: hand it an image (data URL, Blob, or element), it mounts a
  * full-screen overlay with pen tools, and calls you back with the annotated PNG.
