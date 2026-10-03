@@ -8,6 +8,17 @@ An agent-friendly library of production-hardened web modules.
   decisions, failure modes, and platform quirks included, so neither you nor your agent
   has to re-learn them the hard way.
 
+## Why
+
+Every AI agent rebuilding the same utilities burns thousands of tokens rediscovering
+the same quirks — the iOS webview that silently breaks screenshot capture, the touch
+handler that drops strokes, the edge case that only shows up on a real phone.
+
+This kit exists so the discovery cost is paid **once**, not by everyone. A code dump
+alone doesn't save tokens; documented failure modes and platform quirks do. That's
+the whole idea: 群策群力 — pool everyone's hard-won lessons, so nobody pays for
+them twice.
+
 ## Modules
 
 | Module | npm | Status |
