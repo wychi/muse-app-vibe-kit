@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Developer Panel — live demo</title>
+<link rel="stylesheet" href="./styles.css">
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; margin: 0; color: #1d1d1f; background: #f5f5f7; }
+  header { background: #111827; color: #f9fafb; padding: 28px 24px; }
+  header h1 { margin: 0 0 6px; font-size: 22px; }
+  header p { margin: 0; color: #9ca3af; font-size: 14px; }
+  main { max-width: 720px; margin: 0 auto; padding: 24px; display: grid; gap: 16px; }
+  .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 20px; }
+  .card h2 { margin: 0 0 8px; font-size: 16px; }
+  .card p { margin: 0 0 12px; color: #6b7280; font-size: 14px; }
+  .card button { border: 0; border-radius: 8px; background: #0071e3; color: #fff; padding: 10px 16px; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .card button.ghost { background: #e5e7eb; color: #1d1d1f; }
+  #event-log { font: 12px/1.6 ui-monospace, monospace; background: #111827; color: #a7f3d0; border-radius: 10px; padding: 12px 16px; max-height: 220px; overflow: auto; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Demo app</h1>
+  <p>Pretend this is your app. The DEV button (bottom-right) opens the developer panel.</p>
+</header>
+<main>
+  <div class="card">
+    <h2>Make some noise</h2>
+    <p>These buttons generate console output and a failing network request, so the report bundle has something to show.</p>
+    <button id="btn-noise">Log + failing fetch</button>
+    <button id="btn-event" class="ghost">Track event</button>
+  </div>
+  <div class="card">
+    <h2>Mock wiring event log</h2>
+    <p>Everything the panel sends through the wiring lands here.</p>
+    <div id="event-log">(empty)</div>
+  </div>
+  <div class="card">
+    <h2>How it works</h2>
+    <p>Tap the DEV button → <b>Report issue</b> captures a screenshot, opens the annotator, then asks for a description and an optional category. Submit sends the annotated PNG plus a JSON debug bundle through your <code>wiring.submitReport</code>.</p>
+  </div>
+</main>
+
+<script src="./developer-panel.js"></script>
+<script>
+  window.__devPanelDemo = { events: [], diagnostics: [], lastPayload: null };
+
+  function logLine(text) {
+    var el = document.getElementById("event-log");
+    if (el.textContent === "(empty)") el.textContent = "";
+    el.textContent += text + "\n";
+    el.scrollTop = el.scrollHeight;
+  }
+
+  var wiring = {
+    trackEvent: function (name, props) {
+      window.__devPanelDemo.events.push({ name: name, at: new Date().toISOString(), props: props || {} });
+      logLine("event: " + name + " " + JSON.stringify(props || {}));
+    },
+    recordDiagnostic: function (level, message) {
+      window.__devPanelDemo.diagnostics.push({ level: level, message: message });
+      logLine("diagnostic[" + level + "]: " + message.join(" "));
+    },
+    getEvents: function () { return window.__devPanelDemo.events.slice(); },
+    submitReport: function (payload) {
+      window.__devPanelDemo.lastPayload = payload;
+      logLine("submitReport: description=" + JSON.stringify(payload.description) +
+        " category=" + (payload.category || "(none)") +
+        " bundle_keys=" + Object.keys(JSON.parse(payload.debug_bundle)).join(","));
+      return new Promise(function (resolve) {
+        setTimeout(function () { resolve({ short_id: "rpt-demo01" }); }, 400);
+      });
+    },
+  };
+
+  var mountPoint = document.createElement("div");
+  mountPoint.id = "dev-panel-root";
+  document.body.appendChild(mountPoint);
+  DeveloperPanel.mount(mountPoint, {
+    wiring: wiring,
+    viewLabel: "demo_home",
+    appVersion: "demo-1.0.0",
+    instrumentation: { console: true, network: true, errors: true },
+  });
+
+  document.getElementById("btn-noise").addEventListener("click", function () {
+    console.warn("demo: something looks off");
+    console.error("demo: simulated error with stack", new Error("boom"));
+    fetch("/__demo_404__").catch(function () {});
+    wiring.trackEvent("demo_noise_tapped", {});
+  });
+  document.getElementById("btn-event").addEventListener("click", function () {
+    wiring.trackEvent("demo_button_tapped", { which: "event" });
+  });
+</script>
+</body>
+</html>
