@@ -126,10 +126,16 @@ function cropCanvasToRegion(
   source: HTMLCanvasElement,
   region: { x: number; y: number; width: number; height: number },
   scale: number,
+  captureRoot: HTMLElement,
 ): HTMLCanvasElement {
-  // Region is in document-relative CSS pixels; the canvas is scaled.
-  const sx = Math.max(0, Math.round(region.x * scale));
-  const sy = Math.max(0, Math.round(region.y * scale));
+  // Region is document-relative; the canvas is capture-root-relative
+  // (same space as the overlay rects: rect.left - captureRect.left).
+  // Translate, using the root's document position (scroll-independent).
+  const rootRect = captureRoot.getBoundingClientRect();
+  const rootDocLeft = rootRect.left + window.scrollX;
+  const rootDocTop = rootRect.top + window.scrollY;
+  const sx = Math.max(0, Math.round((region.x - rootDocLeft) * scale));
+  const sy = Math.max(0, Math.round((region.y - rootDocTop) * scale));
   const sw = Math.round(region.width * scale);
   const sh = Math.round(region.height * scale);
   // Intersect with the captured area.
@@ -566,7 +572,7 @@ export async function captureFullPageScreenshot(renderer: Html2CanvasRenderer, o
     options.onMeasurement?.({ ...measurement });
     let outputCanvas = canvas;
     if (options.region) {
-      outputCanvas = cropCanvasToRegion(canvas, options.region, scale);
+      outputCanvas = cropCanvasToRegion(canvas, options.region, scale, captureRoot);
       measurement.outputWidth = outputCanvas.width;
       measurement.outputHeight = outputCanvas.height;
       measurement.region = { ...options.region };

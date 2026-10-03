@@ -30,7 +30,7 @@ supportsImageClipboard(): boolean
 | `overlaySelectors` | `string[]` | `[]` | Nominated images painted onto final canvas at measured rect |
 | `onOverlayDiagnostic` | `(d) => void` | — | Stage machine: `received → prepared → decoded → draw-start → drawn \| failed` |
 | `maxPixelArea` | `number` | `12_000_000` | Hard cap; scale is derived down to fit |
-| `region` | `{ x, y, width, height }` | — | Document-relative CSS px; cropped after render, intersected with capture; empty intersection throws |
+| `region` | `{ x, y, width, height }` | — | Document-relative CSS px; the module translates to capture-root space before cropping. Intersected with capture; empty intersection throws |
 
 ## Root priority (when `root` not given)
 
