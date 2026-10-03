@@ -1,0 +1,35 @@
+/* @muse-app-vibe-kit/annotate — self-contained overlay styles. No external variables. */
+.vk-annotate {
+  position: fixed; z-index: 1000; inset: 0;
+  display: grid; grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden; color: #fff; background: #020b0d;
+  padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom);
+}
+.vk-annotate-toolbar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 9px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.16); background: #071d22; padding: 10px 12px;
+}
+.vk-annotate-toolbar > div:first-child { min-width: 138px; margin-right: auto; }
+.vk-annotate-toolbar strong, .vk-annotate-toolbar span { display: block; }
+.vk-annotate-toolbar strong { font-size: 14px; }
+.vk-annotate-toolbar span { margin-top: 2px; color: #a8bdc0; font-size: 10px; }
+.vk-annotate-colors, .vk-annotate-edits, .vk-annotate-submit { display: flex; align-items: center; gap: 6px; }
+.vk-annotate-colors button {
+  width: 30px; height: 30px; border: 2px solid transparent; border-radius: 50%;
+  background: var(--pen-color); box-shadow: 0 0 0 1px rgba(255,255,255,.28); cursor: pointer;
+}
+.vk-annotate-colors button[aria-pressed="true"] { border-color: #071d22; box-shadow: 0 0 0 3px #fff; }
+.vk-annotate-edits button, .vk-annotate-submit button {
+  min-height: 34px; border: 1px solid rgba(255,255,255,.26); border-radius: 8px;
+  color: #fff; background: #15353b; padding: 0 10px; font-size: 11px; font-weight: 850; cursor: pointer;
+}
+.vk-annotate-edits button:disabled, .vk-annotate-submit button:disabled { opacity: .45; cursor: default; }
+.vk-annotate-submit .vk-annotate-skip { border-color: transparent; color: #c0ced0; background: transparent; }
+.vk-annotate-submit .vk-annotate-done { border-color: #a3e635; color: #071d22; background: #a3e635; }
+.vk-annotate-stage { display: grid; min-height: 0; place-items: center; overflow: auto; padding: 12px; }
+.vk-annotate-stage p { color: #a8bdc0; font-size: 13px; }
+.vk-annotate-stage canvas {
+  display: block; max-width: 100%; max-height: 100%; width: auto; height: auto;
+  background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.44);
+  touch-action: none; cursor: crosshair;
+}

@@ -1,0 +1,12 @@
+name: annotate
+display_name: Annotate
+spec_version: "1.0.0"
+npm: "@muse-app-vibe-kit/annotate"
+version: 1.0.0
+maturity: stable
+provides: [image-annotation]
+depends_on: []
+recipe: RECIPE.md
+reference: reference/
+example: example/
+license: MIT
