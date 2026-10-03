@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>annotate-image — live demo</title>
+<link rel="stylesheet" href="annotate-image.css">
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; max-width: 720px; margin: 0 auto; padding: 2rem 1rem 4rem; color: #1d1d1f; }
+  h1 { font-size: 1.6rem; }
+  .sub { color: #666; margin-top: -0.5rem; }
+  .sample-wrap { margin: 1.5rem 0; text-align: center; }
+  .sample-wrap img { max-width: 320px; border: 1px solid #ddd; border-radius: 12px; }
+  .hint { font-size: 0.85rem; color: #888; }
+  .actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 1rem 0; }
+  button, .file-label { font-size: 1rem; padding: 0.6rem 1.2rem; border-radius: 10px; border: 1px solid #ccc; background: #fff; cursor: pointer; }
+  button.primary { background: #0071e3; border-color: #0071e3; color: #fff; }
+  .file-label input { display: none; }
+  #result { margin-top: 2rem; display: none; }
+  #result img { max-width: 100%; border: 1px solid #ddd; border-radius: 12px; }
+  #result .meta { color: #666; font-size: 0.9rem; margin: 0.5rem 0; }
+  nav { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #eee; font-size: 0.9rem; color: #666; }
+  nav a { color: #0071e3; }
+  code { background: #f5f5f7; padding: 0.1rem 0.35rem; border-radius: 6px; font-size: 0.9em; }
+</style>
+</head>
+<body>
+  <h1>annotate-image — live demo</h1>
+  <p class="sub">Freehand image annotation, framework-free. This page uses the module
+    exactly the way a third party would: <code>AnnotateImage.openAnnotator()</code>
+    from the bundled <code>annotate-image.js</code>, plus <code>annotate-image.css</code>.</p>
+
+  <div class="sample-wrap">
+    <img src="sample.png" alt="Sample app screenshot with a layout bug">
+    <p class="hint">Sample: a fitness app screenshot. Notice the Save button covering the last row — circle it.</p>
+  </div>
+
+  <div class="actions">
+    <button class="primary" id="annotate-sample" type="button">Annotate this image</button>
+    <label class="file-label">Or upload your own… <input type="file" id="upload" accept="image/*"></label>
+  </div>
+
+  <section id="result">
+    <h2>Result</h2>
+    <img id="result-img" alt="Annotated result">
+    <p class="meta" id="result-meta"></p>
+    <p><a id="download" download="annotated.png" href="#">Download annotated PNG</a></p>
+  </section>
+
+  <nav>
+    <a href="../">← screenshot demo</a> ·
+    <a href="https://github.com/wychi/muse-app-vibe-kit/tree/main/modules/annotate-image">module source</a> ·
+    npm: <code>@muse-app-vibe-kit/annotate-image</code>
+  </nav>
+
+<script src="annotate-image.js"></script>
+<script>
+  const resultSection = document.getElementById('result');
+  const resultImg = document.getElementById('result-img');
+  const resultMeta = document.getElementById('result-meta');
+  const download = document.getElementById('download');
+
+  function showResult(r) {
+    resultSection.style.display = 'block';
+    if (r.skipped) {
+      resultMeta.textContent = 'Annotation skipped — no changes made.';
+      resultImg.style.display = 'none';
+      download.style.display = 'none';
+      return;
+    }
+    resultImg.style.display = '';
+    download.style.display = '';
+    const dataUrl = 'data:image/png;base64,' + r.dataBase64;
+    resultImg.src = dataUrl;
+    resultMeta.textContent = `${r.strokes} stroke${r.strokes === 1 ? '' : 's'} · ${r.width}×${r.height}px`;
+    download.href = dataUrl;
+    resultSection.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  document.getElementById('annotate-sample').addEventListener('click', () => {
+    // Third-party usage: pass an image, get the annotated PNG back in onComplete.
+    AnnotateImage.openAnnotator({
+      image: 'sample.png',
+      title: 'annotate-image demo',
+      onComplete: showResult,
+    });
+  });
+
+  document.getElementById('upload').addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    // Third-party usage: a Blob/File works too — no data-URL juggling needed.
+    AnnotateImage.openAnnotator({ image: file, title: file.name, onComplete: showResult });
+    e.target.value = '';
+  });
+</script>
+</body>
+</html>
