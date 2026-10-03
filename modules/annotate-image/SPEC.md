@@ -1,4 +1,4 @@
-# SPEC: annotate v1.0.0
+# SPEC: annotate-image v1.1.0
 
 Versioned rules for the module. Additive-only: new options must be optional, existing
 behavior must not change without a major version bump.
@@ -31,8 +31,19 @@ type AnnotateResult = {
   skipped: boolean;
   width: number;       // working/exported pixel width (post-downscale)
   height: number;
+  annotations: StrokeAnnotation[];  // programmatic output, one per stroke
+};
+
+type StrokeAnnotation = {
+  color: string;
+  bbox: { x: number; y: number; width: number; height: number };
+  points: Array<{ x: number; y: number }>;
 };
 ```
+
+**Coordinate space.** `bbox` and `points` are in annotated-image pixels — the same
+space as `dataBase64` (post-`maxDimension` downscale). Divide by `width`/`height`
+to normalize. A dot (single-point stroke) yields a zero-area box.
 
 ## Source-kind rules
 

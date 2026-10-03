@@ -15,6 +15,24 @@ export type AnnotateResult = {
   skipped: boolean;
   width: number;
   height: number;
+  /** Programmatic output: one entry per stroke, in annotated-image pixels. */
+  annotations: StrokeAnnotation[];
+};
+
+/** Bounding box in annotated-image pixels. Divide by width/height to normalize. */
+export type StrokeBBox = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+export type StrokeAnnotation = {
+  color: string;
+  /** Tight bounding box of the stroke path. A dot yields a zero-area box. */
+  bbox: StrokeBBox;
+  /** Full stroke path, in annotated-image pixels (same space as dataBase64). */
+  points: Array<{ x: number; y: number }>;
 };
 
 export type AnnotateOptions = {
@@ -252,12 +270,29 @@ export function openAnnotator(options: AnnotateOptions): AnnotatorHandle {
     options.onComplete(result);
   };
 
+  const buildAnnotations = (): StrokeAnnotation[] =>
+    strokes.map((s) => {
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      for (const p of s.points) {
+        if (p.x < minX) minX = p.x;
+        if (p.y < minY) minY = p.y;
+        if (p.x > maxX) maxX = p.x;
+        if (p.y > maxY) maxY = p.y;
+      }
+      return {
+        color: s.color,
+        bbox: { x: minX, y: minY, width: maxX - minX, height: maxY - minY },
+        points: s.points.map((p) => ({ x: p.x, y: p.y })),
+      };
+    });
+
   const originalResult = (): AnnotateResult => ({
     dataBase64: imageBytes?.originalBase64 ?? "",
     strokes: strokes.length,
     skipped: true,
     width: canvas.width,
     height: canvas.height,
+    annotations: buildAnnotations(),
   });
 
   skipBtn.addEventListener("click", () => finish(originalResult()));
@@ -271,7 +306,7 @@ export function openAnnotator(options: AnnotateOptions): AnnotatorHandle {
       const dataBase64 = blob
         ? await blobToBase64(blob)
         : canvas.toDataURL("image/png").split(",")[1] ?? "";
-      finish({ dataBase64, strokes: strokes.length, skipped: false, width: canvas.width, height: canvas.height });
+      finish({ dataBase64, strokes: strokes.length, skipped: false, width: canvas.width, height: canvas.height, annotations: buildAnnotations() });
     } catch {
       // Tainted canvas (cross-origin source): fall back to the original bytes.
       finish(originalResult());
@@ -299,7 +334,7 @@ export function openAnnotator(options: AnnotateOptions): AnnotatorHandle {
     },
     () => {
       // Image failed to load: report skip with empty bytes rather than hanging.
-      finish({ dataBase64: "", strokes: 0, skipped: true, width: 0, height: 0 });
+      finish({ dataBase64: "", strokes: 0, skipped: true, width: 0, height: 0, annotations: [] });
     },
   );
 

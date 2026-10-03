@@ -19,6 +19,9 @@
   #result { margin-top: 2rem; display: none; }
   #result img { max-width: 100%; border: 1px solid #ddd; border-radius: 12px; }
   #result .meta { color: #666; font-size: 0.9rem; margin: 0.5rem 0; }
+  #json-details { margin-top: 1rem; }
+  #json-details summary { cursor: pointer; color: #0071e3; }
+  #json-pre { background: #f5f5f7; padding: 1rem; border-radius: 10px; overflow-x: auto; font-size: 0.8rem; max-height: 300px; overflow-y: auto; }
   nav { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #eee; font-size: 0.9rem; color: #666; }
   nav a { color: #0071e3; }
   code { background: #f5f5f7; padding: 0.1rem 0.35rem; border-radius: 6px; font-size: 0.9em; }
@@ -45,6 +48,10 @@
     <img id="result-img" alt="Annotated result">
     <p class="meta" id="result-meta"></p>
     <p><a id="download" download="annotated.png" href="#">Download annotated PNG</a></p>
+    <details id="json-details">
+      <summary>View programmatic output (JSON)</summary>
+      <pre id="json-pre"></pre>
+    </details>
   </section>
 
   <nav>
@@ -66,6 +73,7 @@
       resultMeta.textContent = 'Annotation skipped — no changes made.';
       resultImg.style.display = 'none';
       download.style.display = 'none';
+      document.getElementById('json-pre').textContent = JSON.stringify(r.annotations, null, 2);
       return;
     }
     resultImg.style.display = '';
@@ -74,6 +82,7 @@
     resultImg.src = dataUrl;
     resultMeta.textContent = `${r.strokes} stroke${r.strokes === 1 ? '' : 's'} · ${r.width}×${r.height}px`;
     download.href = dataUrl;
+    document.getElementById('json-pre').textContent = JSON.stringify(r.annotations, null, 2);
     resultSection.scrollIntoView({ behavior: 'smooth' });
   }
 
