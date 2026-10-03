@@ -29,9 +29,9 @@ recipes, not a framework — the recipe gets you past the hard parts someone alr
 figured out, and leaves room for your own flavor.
 
 Vibe-coding it yourself is cooking at home; dropping in someone else's library is
-eating out — both are great, it just depends on the situation. So every module
+ordering takeout — both are great, it just depends on the situation. So every module
 ships both: the recipe for when you want to cook, and a reference implementation
-for when you just want to eat.
+for when you'd rather order in.
 
 ## Modules
 
