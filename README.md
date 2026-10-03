@@ -14,6 +14,7 @@ An agent-friendly library of production-hardened web modules.
 |---|---|---|
 | [full-page-screenshot](modules/full-page-screenshot/) | `@muse-app-vibe-kit/screenshot` | ✅ ready — first public module |
 | [annotate](modules/annotate/) | `@muse-app-vibe-kit/annotate` | ✅ ready — freehand image markup, framework-free |
+| video-annotate | — | 📋 planned — video annotation UX, design TBD |
 | change-request-reporter | — | staging (internal use) |
 | dev-panel | — | design draft |
 
