@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0 (2026-10-02)
+
+- Programmatic output: `AnnotateResult.annotations` — one entry per stroke with
+  `bbox` (tight bounding box), full `points` path, and `color`, all in
+  annotated-image pixels (same space as the exported PNG). `strokes` count kept
+  for compatibility.
+
 ## 1.0.0 (2026-10-02)
 
 Initial public release, extracted from production bug-report flows.
