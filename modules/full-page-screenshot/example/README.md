@@ -1,5 +1,7 @@
 # Minimal drop-in example
 
+**Live demo:** https://wychi.github.io/muse-app-vibe-kit/ — capture this page and inspect the output.
+
 ```html
 <button id="shot">Capture full page</button>
 <script type="module">

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>full-page-screenshot — live demo · muse-app-vibe-kit</title>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; }
+  header.hero { padding: 72px 24px 56px; text-align: center; background: #111827; color: #f9fafb; }
+  header.hero .kicker { display: inline-block; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: #9ca3af; border: 1px solid #374151; border-radius: 999px; padding: 4px 14px; margin-bottom: 18px; }
+  header.hero h1 { margin: 0 0 10px; font-size: clamp(28px, 5vw, 44px); }
+  header.hero h1 code { color: #6ee7b7; font-size: .85em; }
+  header.hero p { max-width: 640px; margin: 0 auto; color: #d1d5db; }
+  header.hero a { color: #6ee7b7; }
+  section.band { padding: 56px 24px; }
+  section.band .wrap { max-width: 760px; margin: 0 auto; }
+  section.band h2 { margin-top: 0; }
+  .band.alt { background: #f3f4f6; }
+  @media (prefers-color-scheme: dark) { .band.alt { background: #1f2937; } }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 20px; }
+  .card { border: 1px solid #d1d5db; border-radius: 12px; padding: 18px; background: #fff; }
+  @media (prefers-color-scheme: dark) { .card { background: #111827; border-color: #374151; } }
+  .card h3 { margin: 0 0 6px; font-size: 16px; }
+  .card p { margin: 0; font-size: 14px; color: #6b7280; }
+  .tall { min-height: 120vh; display: flex; align-items: center; background: linear-gradient(180deg, #0ea5e9, #8b5cf6, #ec4899); color: #fff; }
+  .tall .wrap { text-align: center; }
+  .tall h2 { font-size: clamp(24px, 4vw, 36px); }
+  pre.code { background: #111827; color: #e5e7eb; padding: 18px; border-radius: 12px; overflow-x: auto; font-size: 13px; }
+  footer { padding: 40px 24px; text-align: center; color: #6b7280; font-size: 14px; background: #111827; color: #9ca3af; }
+  footer a { color: #6ee7b7; }
+  #capture-btn { position: fixed; right: 20px; bottom: 20px; z-index: 50; background: #059669; color: #fff; border: 0; border-radius: 999px; padding: 14px 24px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+  #capture-btn:disabled { opacity: .6; cursor: wait; }
+  #result { border-top: 4px solid #059669; }
+  #result[hidden] { display: none; }
+  #shot-img { max-width: 100%; border: 1px solid #d1d5db; border-radius: 8px; display: block; margin: 16px auto; }
+  .meta { font-size: 14px; color: #6b7280; }
+  .meta code { background: #e5e7eb; padding: 1px 6px; border-radius: 6px; }
+  @media (prefers-color-scheme: dark) { .meta code { background: #374151; } }
+  #status { min-height: 1.6em; font-weight: 600; }
+  .warn { color: #b45309; font-size: 14px; }
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+  a.dl { display: inline-block; background: #111827; color: #fff; padding: 10px 20px; border-radius: 999px; text-decoration: none; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="kicker">muse-app-vibe-kit · live demo</div>
+  <h1><code>@muse-app-vibe-kit/screenshot</code></h1>
+  <p>Faithful full-page PNG screenshots, hardened for mobile webviews. This page is intentionally
+     taller than your viewport — hit the button and the capture below should contain
+     <em>all of it</em>, top to footer. Recipe &amp; source:
+     <a href="https://github.com/wychi/muse-app-vibe-kit/tree/main/modules/full-page-screenshot">on GitHub</a>.</p>
+</header>
+
+<section class="band">
+  <div class="wrap">
+    <h2>What it handles</h2>
+    <div class="cards">
+      <div class="card"><h3>📏 True full page</h3><p>Measures the real scroll container and renders the whole document, not just the viewport.</p></div>
+      <div class="card"><h3>📱 WebView-hardened</h3><p>Sticky-to-relative clone handling and an image overlay fallback for WKWebView's foreignObject quirks.</p></div>
+      <div class="card"><h3>🧹 Clean captures</h3><p><code>hideSelectors</code> removes UI chrome (like the capture button) only from the render clone.</p></div>
+      <div class="card"><h3>📐 Honest geometry</h3><p>Every capture returns a measurement record: container, viewport, output size, scale.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band tall">
+  <div class="wrap">
+    <h2>This band is 120vh tall.</h2>
+    <p>If the screenshot below shows this entire gradient — and the footer after it — the full-page claim holds.</p>
+    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='120'%3E%3Crect width='320' height='120' rx='16' fill='%23111827'/%3E%3Ctext x='160' y='70' font-family='sans-serif' font-size='24' fill='%236ee7b7' text-anchor='middle'%3Einline SVG image%3C/text%3E%3C/svg%3E"
+         alt="inline SVG test image" width="320" height="120" />
+    <p style="font-size:14px; opacity:.85">↑ an inline image, to exercise the image pipeline</p>
+  </div>
+</section>
+
+<section class="band alt">
+  <div class="wrap">
+    <h2>Drop-in usage</h2>
+    <pre class="code">import html2canvas from "html2canvas";
+import { captureFullPageScreenshot } from "@muse-app-vibe-kit/screenshot";
+
+const { blob, measurement } = await captureFullPageScreenshot(html2canvas, {
+  hideSelectors: ["#capture-btn"],
+});
+console.log(measurement.outputWidth, "x", measurement.outputHeight);</pre>
+  </div>
+</section>
+
+<section class="band" id="result" hidden>
+  <div class="wrap">
+    <h2>Captured output</h2>
+    <div id="status" class="meta"></div>
+    <div id="warnings"></div>
+    <img id="shot-img" alt="full-page screenshot result" />
+    <div class="meta" id="measurement"></div>
+    <div class="btn-row">
+      <a class="dl" id="download" download="full-page.png" href="#">Download PNG</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  muse-app-vibe-kit · MIT ·
+  <a href="https://github.com/wychi/muse-app-vibe-kit">github.com/wychi/muse-app-vibe-kit</a>
+</footer>
+
+<button id="capture-btn" type="button">📸 Capture full page</button>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="./screenshot.js"></script>
+<script>
+  const btn = document.getElementById('capture-btn');
+  const result = document.getElementById('result');
+  const status = document.getElementById('status');
+  const measurementEl = document.getElementById('measurement');
+  const warningsEl = document.getElementById('warnings');
+  const img = document.getElementById('shot-img');
+  const dl = document.getElementById('download');
+
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    warningsEl.innerHTML = '';
+    status.textContent = 'Capturing…';
+    try {
+      const { blob, measurement } = await VibeKitScreenshot.captureFullPageScreenshot(html2canvas, {
+        hideSelectors: ['#capture-btn'],
+        onWarning: (msg) => {
+          const d = document.createElement('div');
+          d.className = 'warn';
+          d.textContent = 'warning: ' + msg;
+          warningsEl.appendChild(d);
+        },
+      });
+      const url = URL.createObjectURL(blob);
+      img.src = url;
+      dl.href = url;
+      status.textContent = 'Done — the image below is the actual capture output.';
+      measurementEl.innerHTML =
+        'output <code>' + measurement.outputWidth + ' × ' + measurement.outputHeight + '</code>' +
+        ' · scale <code>' + measurement.scale + '</code>' +
+        ' · viewport <code>' + measurement.viewportWidth + ' × ' + measurement.viewportHeight + '</code>' +
+        ' · ' + (blob.size / 1024).toFixed(1) + ' KB';
+      result.hidden = false;
+      result.scrollIntoView({ behavior: 'smooth' });
+    } catch (e) {
+      status.textContent = 'Capture failed: ' + (e && e.message ? e.message : e);
+      result.hidden = false;
+    } finally {
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
