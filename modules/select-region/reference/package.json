@@ -1,0 +1,30 @@
+{
+  "name": "@muse-app-vibe-kit/select-region",
+  "version": "1.0.0",
+  "description": "Full-screen drag-to-select a rectangular region \u2014 framework-free, hardened for mobile touch",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./styles.css": "./styles.css"
+  },
+  "files": [
+    "index.ts",
+    "styles.css",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "keywords": [
+    "region",
+    "selection",
+    "crop",
+    "screenshot",
+    "touch"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wychi/muse-app-vibe-kit.git",
+    "directory": "modules/select-region/reference"
+  }
+}

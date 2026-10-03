@@ -1,0 +1,17 @@
+name: select-region
+display_name: Select Region
+spec_version: "1.0.0"
+npm: "@muse-app-vibe-kit/select-region"
+version: 1.0.0
+maturity: staging
+provides: [region-selection]
+depends_on: []
+recipe: RECIPE.md
+reference: reference/
+example: example/
+demo:
+  path: select-region
+  bundle:
+    file: select-region.js
+    global: SelectRegion
+license: MIT
