@@ -1,21 +1,21 @@
 {
-  "name": "@muse-app-vibe-kit/screenshot",
+  "name": "@muse-app-vibe-kit/full-page-screenshot",
   "version": "1.2.0",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./index.ts"
   },
   "license": "MIT",
   "description": "Faithful full-page PNG screenshots, hardened for mobile webviews",
   "files": [
-    "src",
+    "index.ts",
     "README.md",
     "LICENSE",
     "CHANGELOG.md"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/USER/muse-app-vibe-kit.git",
+    "url": "https://github.com/wychi/muse-app-vibe-kit.git",
     "directory": "modules/full-page-screenshot/reference"
   },
   "keywords": [
