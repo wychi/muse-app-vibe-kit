@@ -114,17 +114,37 @@ git(["-c", "user.name=github-actions[bot]", "-c", "user.email=github-actions[bot
   "commit", "-m", `chore: refresh README screenshots (${changed.join(", ")})`]);
 git(["push", "-f", "origin", BRANCH]);
 
+// Derive the "open a PR" URL for BRANCH from the origin remote, e.g.
+// https://github.com/<owner>/<repo>/pull/new/chore/readme-screenshots
+function prNewUrl() {
+  try {
+    const remote = execFileSync("git", ["config", "--get", "remote.origin.url"],
+      { encoding: "utf8", cwd: ROOT }).trim();
+    const m = remote.match(/github\.com[/:]([^/]+)\/([^/]+?)(?:\.git)?$/);
+    if (m) return `https://github.com/${m[1]}/${m[2]}/pull/new/${BRANCH}`;
+  } catch { /* fall through to the generic message */ }
+  return `a PR from branch '${BRANCH}' (could not derive the repo URL from the origin remote)`;
+}
+
 let existing = "";
 try {
   existing = execFileSync("gh", ["pr", "list", "--head", BRANCH, "--state", "open",
     "--json", "number", "--jq", ".[0].number"], { encoding: "utf8", cwd: ROOT }).trim();
 } catch { /* gh not available or no PR */ }
 if (!existing || existing === "null") {
-  execFileSync("gh", ["pr", "create",
-    "--title", "chore: refresh README screenshots",
-    "--body", `Visual change detected in E2E screenshots vs committed \`readme.png\`.\n\nUpdated: ${changed.join(", ")}\n\nPlease review the images before merging — screenshots are curated documentation.`,
-  ], { stdio: "inherit", cwd: ROOT });
-  console.log("Opened PR for README screenshot refresh.");
+  try {
+    execFileSync("gh", ["pr", "create",
+      "--title", "chore: refresh README screenshots",
+      "--body", `Visual change detected in E2E screenshots vs committed \`readme.png\`.\n\nUpdated: ${changed.join(", ")}\n\nPlease review the images before merging — screenshots are curated documentation.`,
+    ], { stdio: "inherit", cwd: ROOT });
+    console.log("Opened PR for README screenshot refresh.");
+  } catch {
+    // The repo may not permit GitHub Actions to create PRs
+    // ("GitHub Actions is not permitted to create or approve pull requests").
+    // The branch is already pushed, so surface the manual step as a warning
+    // instead of failing the whole E2E run over it.
+    console.log(`::warning::Could not open the screenshot-refresh PR automatically (gh pr create failed). The updated screenshots are pushed to '${BRANCH}' — please open it manually: ${prNewUrl()}`);
+  }
 } else {
   console.log(`Updated existing PR #${existing}.`);
 }
