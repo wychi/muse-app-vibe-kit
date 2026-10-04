@@ -14,4 +14,9 @@ demo:
   bundle:
     file: screenshot.js
     global: VibeKitScreenshot
+  vendor:
+    html2canvas:
+      package: "html2canvas@1.4.1"
+      global: "html2canvas"
+      file: "vendor-html2canvas.js"
 license: MIT

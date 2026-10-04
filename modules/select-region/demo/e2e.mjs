@@ -13,7 +13,7 @@ export default {
     await page.mouse.move(300, 500, { steps: 10 });
     await page.mouse.up();
     await shot("03-dragged");
-    await page.click("text=Confirm");
+    await page.click(".sr-confirm");
     await page.waitForFunction(
       () => !document.querySelector(".select-region-overlay"),
       { timeout: 5000 }
