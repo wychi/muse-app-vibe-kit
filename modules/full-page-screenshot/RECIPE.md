@@ -26,6 +26,14 @@ below the fold with zero errors — the measurement record is what exposed it.
 **Rule:** root priority = explicit `options.root` → `[data-generated-space-root]` →
 `[data-full-page-capture]` → `document.body`.
 
+**Exception — a fixed full-screen overlay is open:** if the visible page is a
+`position: fixed` overlay with its own scroll container (full-screen detail view, modal
+dialog), capturing the page root is *wrong*. The fixed overlay is out of document flow,
+so the root's `scrollHeight` measures the **behind** page's height — and the output
+composites overlay content on top with behind-page content below. Pass the overlay element
+itself as `options.root`: its `scrollHeight` is the real content height. Mark the overlay
+with an attribute (e.g. `data-capture-root`) so the capture call can find it.
+
 ### Use html2canvas with `foreignObjectRendering: true`
 
 **Why:** html2canvas's manual layout engine is less faithful for complex pages; foreignObject
@@ -92,6 +100,7 @@ never blocks the screenshot. Learned from `@prongbang/screenshot`'s hard-won con
 | 6 | Clipboard write rejected on iOS | `NotAllowedError` | Synchronous `ClipboardItem` in tap handler |
 | 7 | Live DOM left mutated | Subsequent renders broken | `finally` restore; E2E asserts DOM clean |
 | 8 | CORS-tainted images blank | Visual | Data-URL prep instead of `useCORS` |
+| 9 | Fixed full-screen overlay open, page root captured | Output composites overlay content on top + behind-page content below (wrong `scrollHeight`) | Pass the overlay element as `options.root`; mark it (e.g. `data-capture-root`) |
 
 ## 4. Platform quirks (field notes)
 
@@ -117,6 +126,8 @@ See `SPEC.md` (v1.0.0): option shapes, measurement record fields, diagnostic eve
 - [ ] DOM restore: after capture, live DOM has no marker attributes and original image `src`s.
 - [ ] Copy flow: tap → image lands on clipboard (real device; sandbox can't do this).
 - [ ] Zero console errors.
+- [ ] Fixed full-screen overlay open (own scroll container): capture with the overlay as
+  `root`; output contains only overlay content — no behind-page chrome.
 
 ## 7. Anti-goals
 
