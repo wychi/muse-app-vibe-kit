@@ -8,6 +8,10 @@ Implements the shared developer-panel spec v1.2.0. The React UI is a port of
 the battle-tested panel from Workout Timer / GymQuest; the diagnostics core is
 framework-free.
 
+![Developer panel](https://raw.githubusercontent.com/wychi/muse-app-vibe-kit/main/modules/developer-panel/demo/screenshots/readme.png)
+
+[Live demo](https://wychi.github.io/muse-app-vibe-kit/dev-panel/)
+
 ## Install
 
 ```bash

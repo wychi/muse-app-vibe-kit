@@ -57,6 +57,22 @@ There is **no `site/` directory**. The Pages site is assembled at deploy time by
 Never check in build output. If the demo needs something the bundle doesn't
 expose, that's a signal to improve the module — not to reach into internals.
 
+## README screenshots
+
+Each module's `reference/README.md` (the npm package page) embeds one screenshot:
+
+```
+modules/<name>/demo/screenshots/readme.png
+```
+
+referenced via an absolute `raw.githubusercontent.com` URL so it renders on
+npmjs.com. `demo/screenshots/` is excluded from the Pages site build.
+
+After each release, refresh the screenshot by hand: re-run the demo E2E
+(`node .github/workflows/run-demo-e2e.mjs`), pick a representative shot from
+`e2e-shots/<name>/`, overwrite `readme.png`, and ship it in a PR. Never
+auto-sync — documentation screenshots are curated, not generated.
+
 ## Repo workflow
 
 - **Never push to `main`.** Every change: feature branch → push → pull request → user reviews and merges.

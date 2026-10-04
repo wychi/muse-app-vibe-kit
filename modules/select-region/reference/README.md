@@ -3,6 +3,10 @@
 Full-screen drag-to-select a rectangular region. Framework-free, zero
 dependencies, hardened for mobile touch.
 
+![Dragging a region](https://raw.githubusercontent.com/wychi/muse-app-vibe-kit/main/modules/select-region/demo/screenshots/readme.png)
+
+[Live demo](https://wychi.github.io/muse-app-vibe-kit/select-region/)
+
 ## Usage
 
 ```ts
