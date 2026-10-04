@@ -14,6 +14,7 @@ demo:
   bundle:
     file: screenshot.js
     global: VibeKitScreenshot
+  readme_shot: "output.png"
   vendor:
     html2canvas:
       package: "html2canvas@1.4.1"

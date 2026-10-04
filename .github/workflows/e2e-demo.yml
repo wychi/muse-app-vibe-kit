@@ -9,6 +9,7 @@ on:
 permissions:
   contents: write
   issues: write
+  pull-requests: write
 
 jobs:
   e2e:
@@ -32,6 +33,14 @@ jobs:
         run: node .github/workflows/run-demo-e2e.mjs
         env:
           DEMO_BASE_URL: https://wychi.github.io/muse-app-vibe-kit
+
+      - name: Refresh README screenshots on visual change
+        if: success()
+        run: |
+          npm install --no-save --no-package-lock --no-audit --no-fund pixelmatch pngjs
+          node .github/workflows/refresh-readme-shots.mjs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload screenshots
         if: always()
