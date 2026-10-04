@@ -14,4 +14,5 @@ demo:
   bundle:
     file: developer-panel.js
     global: DeveloperPanel
+  readme_shot: "02-panel-open.png"
 license: MIT
