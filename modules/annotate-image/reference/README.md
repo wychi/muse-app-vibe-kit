@@ -7,6 +7,10 @@ Part of [muse-app-vibe-kit](../../README.md): every module ships a **recipe**
 (`RECIPE.md`) explaining the decisions, failure modes, and platform quirks — so you can
 drop in the reference implementation *or* rebuild it yourself.
 
+![Annotating an image](https://raw.githubusercontent.com/wychi/muse-app-vibe-kit/main/modules/annotate-image/demo/screenshots/readme.png)
+
+[Live demo](https://wychi.github.io/muse-app-vibe-kit/annotate/)
+
 ## Install
 
 ```bash
