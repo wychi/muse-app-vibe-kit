@@ -68,10 +68,14 @@ modules/<name>/demo/screenshots/readme.png
 referenced via an absolute `raw.githubusercontent.com` URL so it renders on
 npmjs.com. `demo/screenshots/` is excluded from the Pages site build.
 
-After each release, refresh the screenshot by hand: re-run the demo E2E
-(`node .github/workflows/run-demo-e2e.mjs`), pick a representative shot from
-`e2e-shots/<name>/`, overwrite `readme.png`, and ship it in a PR. Never
-auto-sync — documentation screenshots are curated, not generated.
+Screenshots are change-driven, not release-driven. `module.yaml`
+`demo.readme_shot` names which E2E screenshot represents the module (taken
+from the main user flow the E2E already tests). After a green E2E run,
+`.github/workflows/refresh-readme-shots.mjs` pixel-diffs the fresh shot
+against the committed `readme.png` (build-stamp corner masked out); when the
+diff exceeds 2%, the changed shots are batch-updated onto the
+`chore/readme-screenshots` branch and a single PR is opened for human review.
+The bot proposes, a human merges — screenshots are curated documentation.
 
 ## Repo workflow
 
