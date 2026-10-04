@@ -14,7 +14,7 @@ export default {
       throw new Error("shot-img has no blob URL");
     }
     const measurement = await page.textContent("#measurement");
-    if (!measurement || !measurement.includes("x")) {
+    if (!measurement || !/\d+\s*×\s*\d+/.test(measurement)) {
       throw new Error("measurement missing dimensions: " + measurement);
     }
   },

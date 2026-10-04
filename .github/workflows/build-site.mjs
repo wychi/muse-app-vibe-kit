@@ -8,6 +8,7 @@
 
 import { execFileSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -89,6 +90,28 @@ for (const name of readdirSync(join(ROOT, "modules"), { withFileTypes: true })) 
     `--global-name=${bundleGlobal}`, "--minify", `--outfile=${join(outDir, bundleFile)}`];
   if (hasTsx) esbuildArgs.push("--jsx=automatic");
   execFileSync("npx", ["--yes", ESBUILD, ...esbuildArgs], { stdio: "inherit" });
+
+  // 1b. Vendor third-party demo dependencies as local IIFE bundles, so demos
+  // have zero runtime CDN dependencies (reliable E2E behind proxies/firewalls).
+  // module.yaml: demo.vendor.<name> = { package, global, file }.
+  const vendors = meta.demo?.vendor ?? {};
+  for (const vname of Object.keys(vendors)) {
+    const v = vendors[vname];
+    const pkg = String(v.package);
+    const outFile = String(v.file ?? `vendor-${vname}.js`);
+    const globalName = String(v.global ?? vname);
+    const vdir = join(tmpdir(), "vibe-kit-vendor");
+    mkdirSync(vdir, { recursive: true });
+    execFileSync("npm", ["install", "--no-save", "--no-package-lock", "--no-audit", "--no-fund", "--prefix", vdir, pkg],
+      { stdio: "inherit" });
+    const at = pkg.lastIndexOf("@");
+    const bare = at > 0 ? pkg.slice(0, at) : pkg;
+    const entryFile = join(vdir, `entry-${vname}.mjs`);
+    writeFileSync(entryFile, `import mod from ${JSON.stringify(bare)};\nglobalThis[${JSON.stringify(globalName)}] = (mod && mod.default) || mod;\n`);
+    execFileSync("npx", ["--yes", ESBUILD, entryFile, "--bundle", "--format=iife", `--outfile=${join(outDir, outFile)}`],
+      { stdio: "inherit" });
+    console.log(`vendored ${pkg} -> /${demoPath}/${outFile} (global ${globalName})`);
+  }
 
   // 2. Ship the reference stylesheet alongside, if the module has one.
   const css = join(dir, "reference", "styles.css");
