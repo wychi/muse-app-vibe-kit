@@ -30,6 +30,7 @@ jobs:
           npx playwright install chromium --with-deps
 
       - name: Run demo E2E tests
+        id: e2e
         run: node .github/workflows/run-demo-e2e.mjs
         env:
           DEMO_BASE_URL: https://wychi.github.io/muse-app-vibe-kit
@@ -56,7 +57,10 @@ jobs:
       # if repo copies are ever needed, sync them through a PR instead.
 
       - name: Open issue on E2E failure
-        if: failure()
+        # Only the E2E test step failing means "E2E demo tests failed".
+        # A later step failing (e.g. screenshot refresh) must not file or
+        # rotate this issue — it has its own reporting.
+        if: failure() && steps.e2e.conclusion == 'failure'
         uses: actions/github-script@v7
         with:
           script: |
