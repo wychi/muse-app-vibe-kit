@@ -1,6 +1,6 @@
-# SPEC — @muse-app-vibe-kit/developer-panel v1.0.0
+# SPEC — @muse-app-vibe-kit/developer-panel v1.1.0
 
-Implements shared developer-panel spec **1.2.0** (`DEV_PANEL_SPEC_VERSION`).
+Implements shared developer-panel spec **1.3.0** (`DEV_PANEL_SPEC_VERSION`).
 Kit addition: `DevPanelWiring.getEvents()` (the panel assembles the report
 bundle itself and needs read access to the app's analytics events).
 
@@ -21,7 +21,7 @@ export function recordDiagnostic(level, values: unknown[]): void;
 export function getDiagnostics(): DiagnosticLine[];
 export function getNetworkRequests(): NetworkRequestLine[];
 export function getDeviceLabel(): string; // + getDeviceName/getDeviceId/getDeviceShortId
-export const DEV_PANEL_SPEC_VERSION = "1.2.0";
+export const DEV_PANEL_SPEC_VERSION = "1.3.0";
 export const REPORT_BUNDLE_SCHEMA_VERSION = 1;
 ```
 
@@ -39,25 +39,34 @@ export const REPORT_BUNDLE_SCHEMA_VERSION = 1;
 
 ## Report flow (order is part of the spec)
 
-1. Tap `Report issue` → panel collapses → full-page screenshot captured immediately.
-2. Annotation overlay (skip allowed).
-3. Describe: annotated thumbnail + optional single-select category (re-tap
-   deselects; unselected submittable) + textarea (placeholder
-   "What should change? Describe it…") + Submit (disabled while blank).
-4. Submit → report-ID card with the returned short ID.
+1. Tap `Report issue` → panel collapses → the current page/view ID is
+   recorded first and **shown** in the flow (never typed by hand).
+2. Describe step appears immediately: page/view ID line + optional
+   single-select category (re-tap deselects; unselected submittable) +
+   textarea (placeholder "What should change? Describe it…") + an
+   **"Add screenshot"** secondary button + `Submit` (disabled while the
+   description is blank).
+3. Tap "Add screenshot" (only when needed) → full-page screenshot →
+   annotation overlay (skip allowed) → annotated thumbnail lands back in
+   the describe step (button becomes "Retake screenshot").
+4. Submit → report-ID card with the returned short ID. Submitting works
+   with or without a screenshot.
 
-Screenshot button: copies the full-page screenshot to the clipboard; when the
-clipboard can't take images, shows an explanatory message instead.
+The standalone `Screenshot` button (panel home) copies the full-page
+screenshot to the clipboard; when the clipboard can't take images, shows
+an explanatory message instead. It is separate from the in-flow optional
+screenshot above.
 
 ## Events emitted (via `wiring.trackEvent`)
 
 - `report_annotation_completed` — `{ strokes: number, skipped: boolean }`
+  (fires only when a screenshot is taken)
 - `report_category_selected` — `{ category: string }`
 - `report_submitted` — `{ report_id: string | null, view: string }`
 
 Diagnostics (module's own flow, always recorded; failures carry `error_kind`):
-screenshot started / succeeded / failed; change-request failed (description
-preserved for retry).
+report started (with page/view ID); screenshot started / succeeded / failed;
+change-request failed (description preserved for retry).
 
 ## Report bundle schema (v1)
 
@@ -87,7 +96,7 @@ preserved for retry).
   "events": [ { "name": "...", "at": "ISO", "props": {} } ],
   "diagnostics": [ { "level": "info|warning|error", "at": "ISO", "message": "..." } ],
   "network_requests": [ { "method": "POST", "url": "...", "status": 200, "ok": true, "durationMs": 231, "at": "ISO" } ],
-  "screenshot": { "outputWidth": 780, "outputHeight": 1688, "scale": 2 }
+  "screenshot": { "outputWidth": 780, "outputHeight": 1688, "scale": 2 }  // null when no screenshot was taken
 }
 ```
 

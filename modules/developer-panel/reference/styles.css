@@ -41,6 +41,9 @@
 .dev-action-button-secondary { background: var(--surface-2); color: var(--text); border-color: var(--border); }
 .dev-action-button-secondary:active:not(:disabled) { filter: brightness(.96); }
 .dev-report-hint { margin: 0; color: var(--dim); font-size: 12px; }
+.dev-report-view { margin: 0; color: var(--dim); font-size: 12px; }
+.dev-report-view code { color: var(--text); font: 700 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 1px 6px; }
+.dev-report-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .dev-report-thumb { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface-2); }
 .dev-report-thumb img { display: block; width: 100%; max-height: 180px; object-fit: contain; }
 .dev-report-categories { display: flex; flex-wrap: wrap; gap: 6px; }

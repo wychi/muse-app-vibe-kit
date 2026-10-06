@@ -17,12 +17,12 @@ with no reproduction context.
 
 **D1 — Port the battle-tested panel, don't rewrite it.** The reference is the
 DEV panel from Workout Timer / GymQuest (three apps, real users). Rewriting
-the four-step flow in vanilla DOM would discard that verification. The kit's
+the flow in vanilla DOM would discard that verification. The kit's
 first React module is the honest shape of this reference.
 
 **D2 — UI is React; the diagnostics core is framework-free.** Inventory:
-UI = trigger button, panel card, four-step flow (annotate canvas, describe
-page, report-ID card). Non-UI = DevPanelWiring seam, device identity,
+UI = trigger button, panel card, report flow (describe step, optional
+screenshot+annotate, report-ID card). Non-UI = DevPanelWiring seam, device identity,
 diagnostics buffer, bundle assembly, flow state machine. The core is exported
 for use without the panel.
 
@@ -55,7 +55,7 @@ needed.
 Chinese labels; the kit is English-first, so the default set is English and
 the `categories` prop overrides both value and label.
 
-**D8 — `DevPanelWiring` gains `getEvents()`.** The shared spec (1.2.0)
+**D8 — `DevPanelWiring` gains `getEvents()`.** The shared spec (1.3.0)
 defines three seams; the panel assembles the bundle itself, so it needs read
 access to the app's analytics events. Documented as a kit addition.
 
@@ -97,18 +97,21 @@ access to the app's analytics events. Documented as a kit addition.
 
 ## Spec
 
-See `SPEC.md`. Implements shared developer-panel spec 1.2.0
+See `SPEC.md`. Implements shared developer-panel spec 1.3.0
 (`DEV_PANEL_SPEC_VERSION`), plus the kit's `getEvents()` wiring addition.
 
 ## Verification
 
-`demo/e2e.mjs` drives the full flow against the live demo with a mock
-wiring: open panel → Report issue → screenshot captured → draw annotation
-stroke → pick category → type description → submit → report-ID card shown.
-Assertions: stage transitions, recorded analytics events
-(`report_annotation_completed`, `report_category_selected`,
-`report_submitted`), and the submitted bundle's schema fields. Showcase
-screenshots retained per module.
+`demo/e2e.mjs` drives the new flow against the live demo with a mock
+wiring, in two passes: (1) open panel → Report issue → describe step shows
+the page/view ID → pick category → type description → submit *without* a
+screenshot → report-ID card; (2) a second report → "Add screenshot" →
+annotator → draw a stroke → Done → thumbnail back in the describe step →
+submit → report-ID card. Assertions: stage transitions, the page ID shown,
+recorded analytics events (`report_category_selected`, `report_submitted`
+in pass 1; `report_annotation_completed` only in pass 2), the first payload
+carries no `data_base64` and its bundle `screenshot` is `null`, the second
+payload carries the annotated PNG. Showcase screenshots retained per module.
 
 ## Anti-goals
 

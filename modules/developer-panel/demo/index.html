@@ -38,13 +38,13 @@
   </div>
   <div class="card">
     <h2>How it works</h2>
-    <p>Tap the DEV button → <b>Report issue</b> captures a screenshot, opens the annotator, then asks for a description and an optional category. Submit sends the annotated PNG plus a JSON debug bundle through your <code>wiring.submitReport</code>.</p>
+    <p>Tap the DEV button → <b>Report issue</b> records the current page ID and opens the describe step right away (category optional, description required). Add a screenshot only if it helps — it goes through the annotator and lands back as a thumbnail. Submit sends the JSON debug bundle through your <code>wiring.submitReport</code>, with the annotated PNG attached only when you took one.</p>
   </div>
 </main>
 
 <script src="./developer-panel.js"></script>
 <script>
-  window.__devPanelDemo = { events: [], diagnostics: [], lastPayload: null };
+  window.__devPanelDemo = { events: [], diagnostics: [], payloads: [], lastPayload: null };
 
   function logLine(text) {
     var el = document.getElementById("event-log");
@@ -64,6 +64,7 @@
     },
     getEvents: function () { return window.__devPanelDemo.events.slice(); },
     submitReport: function (payload) {
+      window.__devPanelDemo.payloads.push(payload);
       window.__devPanelDemo.lastPayload = payload;
       logLine("submitReport: description=" + JSON.stringify(payload.description) +
         " category=" + (payload.category || "(none)") +
