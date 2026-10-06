@@ -47,6 +47,11 @@ for when you want it ready-made.
 | change-request-reporter | — | — | staging (internal use) |
 | dev-panel | — | — | design draft |
 
+## Roadmap
+
+- **developer-panel → spec 1.3.0**（2026-10-06 記入）：回報流程截圖改可選（開回報先記當前頁面 ID，描述先出現、截圖按鈕按需）。`module.yaml` 的 `spec_version`、`SPEC.md`、`RECIPE.md`、reference 實作待跟進。
+- **vanilla-JS 預建 bundle**（2026-10-06 記入）：讓非 React 的 app 也能直接引用 kit 模塊（預建 JS＋全域變數，demo 頁已是這種用法）。從 developer-panel 開始試點。待設計。
+
 ## Layout per module
 
 ```
