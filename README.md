@@ -49,7 +49,7 @@ for when you want it ready-made.
 
 ## Roadmap
 
-- **developer-panel → spec 1.3.0** (recorded 2026-10-06): report flow makes the screenshot optional (record the current page ID on open, describe step comes first, screenshot button on demand). `module.yaml` `spec_version`, `SPEC.md`, `RECIPE.md`, and the reference implementation still need to follow.
+- **developer-panel → spec 1.3.0** (recorded 2026-10-06, done in this PR): report flow makes the screenshot optional (record the current page ID on open, describe step comes first, screenshot button on demand). `module.yaml` `spec_version` → 1.3.0, `SPEC.md`, `RECIPE.md`, reference implementation (1.1.0), and live demo all updated; E2E passed.
 - **vanilla-JS prebuilt bundle** (recorded 2026-10-06): let non-React apps consume kit modules directly (prebuilt JS + global, the same way the demo pages already do). Pilot with developer-panel. Design TBD.
 
 ## Layout per module
