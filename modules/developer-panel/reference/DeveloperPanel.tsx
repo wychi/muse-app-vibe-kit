@@ -16,9 +16,9 @@ const DEFAULT_CATEGORIES: CategoryOption[] = [
   { value: "other", label: "Other" },
 ];
 
-/** Reordered report flow: capture -> annotate -> describe -> submit. */
-type ReportStage = "idle" | "capturing" | "describing" | "submitting";
-type BusyAction = "capture" | "report" | null;
+/** Spec 1.3.0 report flow: describe first, screenshot optional (capture -> annotate on demand). */
+type ReportStage = "idle" | "describing" | "submitting";
+type BusyAction = "capture" | "screenshot" | null;
 
 function bytesToBase64(bytes: Uint8Array): string {
   let s = "";
@@ -50,6 +50,7 @@ export function DeveloperPanel({ wiring, viewLabel, appVersion, instrumentation,
   const [reportShortId, setReportShortId] = useState<string | null>(null);
   const [reportStage, setReportStage] = useState<ReportStage>("idle");
   const [reportShot, setReportShot] = useState<string | null>(null);
+  const [reportMeasurement, setReportMeasurement] = useState<FullPageScreenshotMeasurement | null>(null);
   const [reportDescription, setReportDescription] = useState("");
   const [reportCategory, setReportCategory] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -89,13 +90,32 @@ export function DeveloperPanel({ wiring, viewLabel, appVersion, instrumentation,
 
   const categoryOptions = categories?.length ? categories : DEFAULT_CATEGORIES;
 
-  const startReport = async () => {
+  /**
+   * Spec 1.3.0: opening a report no longer captures a screenshot. The current
+   * page/view ID is recorded first (shown, never typed), then the describe
+   * step appears immediately. The screenshot is taken only on demand.
+   */
+  const startReport = () => {
     if (busy || reportFlowRef.current) return;
     reportFlowRef.current = true;
     setReportShortId(null);
-    setBusy("report");
+    setReportShot(null);
+    setReportMeasurement(null);
+    setReportDescription("");
+    setReportCategory(null);
+    recordDiagnostic("info", ["Report started — page/view:", viewLabel || "(blank)"]);
     setOpen(false);
-    setReportStage("capturing");
+    setReportStage("describing");
+    setOpen(true);
+    reportFlowRef.current = false;
+  };
+
+  /** On-demand screenshot inside the describe step (spec 1.3.0: optional). */
+  const captureReportScreenshot = async () => {
+    if (busy || reportFlowRef.current) return;
+    reportFlowRef.current = true;
+    setBusy("screenshot");
+    setOpen(false);
     try {
       const captureRoot = document.body;
       recordDiagnostic("info", ["Report screenshot started"]);
@@ -119,47 +139,45 @@ export function DeveloperPanel({ wiring, viewLabel, appVersion, instrumentation,
       });
       wiring.trackEvent("report_annotation_completed", { strokes: annotation.strokes, skipped: annotation.skipped });
       setReportShot(annotation.dataBase64);
-      setReportDescription("");
-      setReportCategory(null);
-      setReportStage("describing");
-      setOpen(true);
+      setReportMeasurement(captured.measurement);
     } catch (error) {
       recordDiagnostic("error", ["Report screenshot failed —", error]);
-      speak("Couldn’t capture the screenshot. Please try again.");
-      setReportStage("idle");
-      setOpen(true);
+      speak("Couldn’t capture the screenshot. Describe it in words instead — you can still submit.");
     } finally {
       setBusy(null);
       reportFlowRef.current = false;
+      setOpen(true);
     }
   };
 
   const submitReport = async () => {
     const description = reportDescription.trim();
-    if (!description || !reportShot || reportStage !== "describing") return;
+    if (!description || reportStage !== "describing") return;
     setReportStage("submitting");
     try {
       const bundle = assembleReportBundle({
         view: viewLabel,
         appVersion,
         events: wiring.getEvents(),
+        ...(reportMeasurement ? { screenshot: reportMeasurement } : {}),
       });
       const result = await wiring.submitReport({
         description,
         ...(reportCategory ? { category: reportCategory } : {}),
         route: viewLabel,
         app_version: appVersion,
-        data_base64: reportShot,
+        ...(reportShot ? { data_base64: reportShot } : {}),
         debug_bundle: JSON.stringify(bundle),
       });
       wiring.trackEvent("report_submitted", { report_id: result.short_id ?? null, view: viewLabel });
       recordDiagnostic("info", ["Change request submitted", viewLabel, result.short_id ?? "without short ID"]);
       setReportShortId(result.short_id ?? null);
       setReportShot(null);
+      setReportMeasurement(null);
       setReportDescription("");
       setReportCategory(null);
       setReportStage("idle");
-      speak(result.short_id ? `Change request sent. ID ${result.short_id}.` : "Change request sent with a screenshot.");
+      speak(result.short_id ? `Change request sent. ID ${result.short_id}.` : reportShot ? "Change request sent with a screenshot." : "Change request sent.");
     } catch (error) {
       recordDiagnostic("error", ["Change request failed —", error]);
       wiring.recordDiagnostic("error", ["Change request failed", error]);
@@ -204,20 +222,18 @@ export function DeveloperPanel({ wiring, viewLabel, appVersion, instrumentation,
 
         <section className="dev-panel-section dev-report-section" aria-label="Report and screenshot">
           {!describing && <>
-            <button type="button" className="dev-action-button dev-action-button-primary" onClick={() => void startReport()} disabled={busy !== null} aria-label="Report a problem">
+            <button type="button" className="dev-action-button dev-action-button-primary" onClick={startReport} disabled={busy !== null} aria-label="Report a problem">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 4V5Z" /><path d="M8 9h8M8 12h5" /></svg>
-              <span>{busy === "report" ? "Capturing…" : "Report issue"}</span>
+              <span>Report issue</span>
             </button>
             <button type="button" className="dev-action-button dev-action-button-secondary" onClick={() => void capture()} disabled={busy !== null} aria-label="Copy full-page screenshot to clipboard">
               <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="2" /><path d="m8 6 1.5-2h5L16 6M8.5 13a3.5 3.5 0 1 0 7 0 3.5 3.5 0 0 0-7 0Z" /></svg>
               <span>{busy === "capture" ? "Copying…" : "Screenshot"}</span>
             </button>
-            <p className="dev-report-hint">Tap Report issue → auto screenshot, straight to annotation.</p>
+            <p className="dev-report-hint">Tap Report issue → describe first; add a screenshot only if it helps.</p>
           </>}
           {describing && <>
-            {reportShot && <div className="dev-report-thumb">
-              <img src={`data:image/png;base64,${reportShot}`} alt="Annotated report screenshot" />
-            </div>}
+            <p className="dev-report-view">Page <code>{viewLabel || "(no view label)"}</code></p>
             <div className="dev-report-categories" role="radiogroup" aria-label="Issue category (optional)">
               {categoryOptions.map((c) => (
                 <button
@@ -245,14 +261,29 @@ export function DeveloperPanel({ wiring, viewLabel, appVersion, instrumentation,
               maxLength={2000}
               disabled={reportStage === "submitting"}
             />
-            <button
-              type="button"
-              className="dev-action-button dev-action-button-primary"
-              onClick={() => void submitReport()}
-              disabled={!reportDescription.trim() || reportStage === "submitting"}
-            >
-              <span>{reportStage === "submitting" ? "Sending…" : "Submit"}</span>
-            </button>
+            {reportShot && <div className="dev-report-thumb">
+              <img src={`data:image/png;base64,${reportShot}`} alt="Annotated report screenshot" />
+            </div>}
+            <div className="dev-report-actions">
+              <button
+                type="button"
+                className="dev-action-button dev-action-button-secondary"
+                onClick={() => void captureReportScreenshot()}
+                disabled={busy !== null || reportStage === "submitting"}
+                aria-label="Add a screenshot to this report"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="2" /><path d="m8 6 1.5-2h5L16 6M8.5 13a3.5 3.5 0 1 0 7 0 3.5 3.5 0 0 0-7 0Z" /></svg>
+                <span>{busy === "screenshot" ? "Capturing…" : reportShot ? "Retake screenshot" : "Add screenshot"}</span>
+              </button>
+              <button
+                type="button"
+                className="dev-action-button dev-action-button-primary"
+                onClick={() => void submitReport()}
+                disabled={!reportDescription.trim() || reportStage === "submitting"}
+              >
+                <span>{reportStage === "submitting" ? "Sending…" : "Submit"}</span>
+              </button>
+            </div>
           </>}
           {reportShortId && <section className="report-id-card" aria-label="Submitted report ID">
             <button type="button" className="report-id-close" aria-label="Dismiss report ID" onClick={() => setReportShortId(null)}>×</button>

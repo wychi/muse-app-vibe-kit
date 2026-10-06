@@ -1,10 +1,10 @@
 # @muse-app-vibe-kit/developer-panel
 
 Floating DEV panel for web apps: one-tap bug reports with an industry-standard
-debug bundle. Screenshot → annotate → describe → submit, plus a one-tap
-full-page screenshot-to-clipboard button.
+debug bundle. Describe first, screenshot optional (capture → annotate on
+demand), plus a one-tap full-page screenshot-to-clipboard button.
 
-Implements the shared developer-panel spec v1.2.0. The React UI is a port of
+Implements the shared developer-panel spec v1.3.0. The React UI is a port of
 the battle-tested panel from Workout Timer / GymQuest; the diagnostics core is
 framework-free.
 

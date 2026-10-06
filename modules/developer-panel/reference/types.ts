@@ -30,7 +30,7 @@ export interface AnalyticsEvent {
 }
 
 /**
- * The three seams the host app wires up (shared spec 1.2.0), plus `getEvents`.
+ * The three seams the host app wires up (shared spec 1.3.0), plus `getEvents`.
  *
  * `getEvents` is a kit addition beyond the shared spec: the panel assembles the
  * report bundle itself, so it needs read access to the app's analytics events.
@@ -51,8 +51,11 @@ export interface ChangeRequestPayload {
   category?: string;
   route: string;
   app_version: string;
-  /** Annotated PNG as base64 (no `data:` prefix). */
-  data_base64: string;
+  /**
+   * Annotated PNG as base64 (no `data:` prefix). Optional since spec 1.3.0 —
+   * a report can be submitted without a screenshot.
+   */
+  data_base64?: string;
   /** JSON string produced by assembleReportBundle(). */
   debug_bundle: string;
 }
@@ -96,4 +99,4 @@ export interface DeveloperPanelProps {
 }
 
 /** Which version of the shared developer-panel spec this implements. */
-export const DEV_PANEL_SPEC_VERSION = "1.2.0";
+export const DEV_PANEL_SPEC_VERSION = "1.3.0";
